@@ -2,24 +2,23 @@
 
 
 
-TLS                                                   N. Cam-Winget, Ed.
+TLS                                                        N. Cam-Winget
 Internet-Draft                                             Cisco Systems
-Intended status: Standards Track                               J. Visoky
-Expires: August 18, 2018                                            ODVA
-                                                       February 14, 2018
+Intended status: Informational                                 J. Visoky
+Expires: August 27, 2018                                            ODVA
+                                                       February 23, 2018
 
 
-                 TLS_MAC_HASH Ciphersuites for TLS 1.3
+         TLS 1.3 Authentication and Integrity only Ciphersuites
                 draft-camwinget-tls-ts13-macciphersuites
 
 Abstract
 
-   Use cases, specifically in Internet of Things (IoT) and constrained
-   environments do not require data encryption, though mutual
-   authentication during tunnel establishment and message integrity is
-   still required.  This document describes how keyed hash algorithms
-   can be negotiated as ciphersuites in TLS 1.3 [will need to reference
-   that draft here].
+   There are use cases, specifically in Internet of Things (IoT) and
+   constrained environments do not require confidentiality, though
+   mutual authentication during tunnel establishment and message
+   integrity is still mandated.  This document defines the use of HMAC
+   only as ciphersuites in TLS 1.3.
 
 Status of This Memo
 
@@ -36,7 +35,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on August 18, 2018.
+   This Internet-Draft will expire on August 27, 2018.
 
 Copyright Notice
 
@@ -53,7 +52,8 @@ Copyright Notice
 
 
 
-Cam-Winget & Visoky      Expires August 18, 2018                [Page 1]
+
+Cam-Winget & Visoky      Expires August 27, 2018                [Page 1]
 
 Internet-Draft                 IoT Ciphers                 February 2018
 
@@ -65,39 +65,37 @@ Table of Contents
 
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
    2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   2
-   3.  Cipher Suites . . . . . . . . . . . . . . . . . . . . . . . .   3
-     3.1.  Certificate Cipher Suites . . . . . . . . . . . . . . . .   3
-     3.2.  PSK Cipher Suites . . . . . . . . . . . . . . . . . . . .   3
-   4.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   3
-   5.  Security Considerations . . . . . . . . . . . . . . . . . . .   3
-   6.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   4
-   7.  Normative References  . . . . . . . . . . . . . . . . . . . .   4
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   4
+   3.  Applicability Statement . . . . . . . . . . . . . . . . . . .   3
+   4.  Using Integrity only Cipher Suites  . . . . . . . . . . . . .   4
+   5.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   4
+   6.  Security and Privacy Considerations . . . . . . . . . . . . .   4
+   7.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   5
+   8.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   5
+     8.1.  Normative References  . . . . . . . . . . . . . . . . . .   5
+     8.2.  Informative Reference . . . . . . . . . . . . . . . . . .   5
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   5
 
 1.  Introduction
 
    There are several use cases in which communications privacy is not
-   strictly needed, although authenticity of the communications is still
-   very important.  For example, within the Industrial Automation space
-   there could be TCP or UDP communications which command a robotic arm
-   to move a certain distance at a certain speed.  Without authenticity
-   guarantees an attacker could modify the packets to change the
-   movement of the robotic arm, potentially causing physical damage.
-   However, a threat model would very likely show that there is little
-   to no need for confidentiality of this communication, as the packets
-   only contain simple I/O commands.
+   strictly needed, although authenticity of the communications
+   transport is still very important.  For example, within the
+   Industrial Automation space there could be TCP or UDP communications
+   which command a robotic arm to move a certain distance at a certain
+   speed.  Without authenticity guarantees an attacker could modify the
+   packets to change the movement of the robotic arm, potentially
+   causing physical damage.  However, a threat model would very likely
+   show that there is little to no need for confidentiality of this
+   communication, as the packets only contain simple I/O commands.
 
    Besides having a strong need for authenticity and a weak need for
    confidentiality, many of these systems also have serious latency
    requirements.  Furthermore, several IoT devices (industrial or
    otherwise) have limited processing capability.  However, these IoT
    systems still gain great benefit from leveraging TLS 1.3 for secure
-   communications.  Given the limited processing power and reduced need
-   for confidentiality it is necessary to allow for cipher suites that
-   maintain authenticity without confidentiality.  Cipher suites such as
-   these are described in this document as "NULL cipher suites".  This
-   document defines a number of NULL cipher suites for use within TLS
-   1.3.
+   communications.  Given the reduced need for confidentiality TLS 1.3
+   [I-D.ietf-tls-tls13] cipher suites that maintain data integrity
+   without confidentiality is described in this document.
 
 2.  Terminology
 
@@ -109,102 +107,160 @@ Table of Contents
 
 
 
-Cam-Winget & Visoky      Expires August 18, 2018                [Page 2]
+
+
+Cam-Winget & Visoky      Expires August 27, 2018                [Page 2]
 
 Internet-Draft                 IoT Ciphers                 February 2018
 
 
-3.  Cipher Suites
+3.  Applicability Statement
 
-   This document defines two cipher suites for use in TLS 1.3.  Both of
-   these cipher suites use ECDHE for key agreement, and use SHA-256 for
-   the HMAC.  The difference between these two is that one is based on
-   certificates and the other on PSKs.
+   The ciphersuites defined in this document are intended for a small
+   limited set of applications where confidentiality requirements are
+   relaxed and the need to minimize the cryptographic algorithms are
+   prioritized.  This section describes some of those applicable use
+   cases.
 
-3.1.  Certificate Cipher Suites
+   Use cases in the industrial automation industry while requiring data
+   integrity, relax the confidential communications requirement.
+   Mainly, information communicated to unmmaned machines to execute
+   repetitive tasks do not convey private information.  For example,
+   there could be a system with a robotic arm that is doing high speed
+   pick-and-place of materials.  The position synchronization data and
+   motion commands are required to have very low latency, as the process
+   needs to be done at high speed on a compute and memory constrained
+   device.  However, information such as the position, speed,
+   acceleration of the robotic arm or other material in the system is
+   not confidential.  That is, while an attacker can determine the
+   behavioral aspects and task of the device; no intellectual property
+   concerns or data privacy concerns exist for these communications.
+   However, data integrity is required as being able to modify this data
+   would be a threat that an attacker might seek to exploit with serious
+   consequences; the attacker could modify the motion information in
+   order to cause physical damage to the equipment.
 
-   The certificate based cipher suite defined by this document is:
+   Another use case which is closely related is that of fine grained
+   time updates.  Motion systems often rely on time synchronization to
+   ensure proper execution.  Time updates are essentially public, there
+   is no threat from an attacker knowing the time update information.
+   This should make intuitive sense to those not familiar with these
+   applications; rarely if ever does time information present a serious
+   attack surface dealing with privacy.  However the authenticity is
+   still quite important.  Modification of the data can at best lead to
+   a denial-of-service attack, although a more intelligent threat actor
+   might be able to cause actual physical damage.  As these time
+   synchronization updates are very fine-grained, it is again important
+   for latency to be very low.
 
-   TLS_ECDHE_ECDSA_WITH_NULL_SHA256 = {0xC0, 0x0??}
-
-   Note that this is a new cipher suite not present in TLS 1.2.  This
-   cipher suite uses ECDHE for the key exchange and ECDSA for the
-   certificate's digital signature.  SHA-256 HMACs are used for the
-   packet authentication.  This cipher suite is identical to the
-   TLS_ECDHE_ECDSA_WITH_ NULL_SHA cipher suite described in RFC 4492 and
-   RFC 5246, with the exception that it uses SHA-256 for the HMAC rather
-   than SHA-1.
-
-3.2.  PSK Cipher Suites
-
-   The certificate based cipher suite defined by this document is:
-
-   TLS_ECDHE_PSK_WITH_NULL_SHA256 = {0xC0, 0x03A}
-
-   Note that this is an existing cipher suite, defined in RFC 5489.  The
-   purpose of this document is to standardize its use within TLS 1.3.
-   This cipher suite uses ECDHE for the key exchange and PSKs for
-   authentication.  SHA-256 HMACs are used for packet authentication.
-
-4.  IANA Considerations
-
-   As mentioned, the PSK-based cipher suite is already in use, and
-   therefore has an assigned value from IANA.
-
-   The certificate-based cipher suite has been assigned the following
-   value from IANA:
-
-   TLS_ECDHE_ECDSA_WITH_NULL_SHA256 = {0xC0, 0x0??}
-
-5.  Security Considerations
-
-   The security considerations present in RFC 4492 apply to this
-   document as well.  Furthermore, as the cipher suites described in
-   this document do not provide any confidentiality, it is important
-   that they only be used in the special cases where there are no
-
+   A third use case deals with Alarming data.  When industrial control
+   sensing equipment can be configured to send alarm information when it
+   meets certain conditions.  Often times this data is used to detect
+   certain out-of-tolerance conditions, allowing an operator or
+   automated system to take corrective action.  Once again, in many
+   systems the reading of this data doesn't grant the attacker
+   information that can be exploited, it is generally just information
+   regarding the physical state of the system.  At the same time, being
+   able to modify this data would allow an attacker to either trigger
 
 
-Cam-Winget & Visoky      Expires August 18, 2018                [Page 3]
+
+Cam-Winget & Visoky      Expires August 27, 2018                [Page 3]
 
 Internet-Draft                 IoT Ciphers                 February 2018
 
 
-   confidentiality concerns, and the performance degradation due to
-   applying confidentiality is too great for the system to bear.
+   alarms falsely or to cover up evidence of an attack that might allow
+   for detection of their malicious activity.  Furthermore, sensors are
+   often low powered devices that might struggle to process encrypted
+   and authenticated data.  Sending data that is just authenticated
+   significantly eases the burden placed on these devices, yet still
+   allows the data to be protected against any tampering threats.
 
-6.  Acknowledgements
+   The above use cases describe the relaxed requirements to provide
+   confidentiality, and as these devices come with a small runtime
+   memory footprint, the need to minimize the number of cryptographic
+   algorithms used is prioritized.
+
+4.  Using Integrity only Cipher Suites
+
+   This document defines the following cipher suites for use in TLS 1.3:
+
+   TLS_SHA256_SHA256  {0x13, TBD}
+
+   TLS_SHA384_SHA384  {0x13, TBD}
+
+   These cipher suites allow the use of SHA-256 or SHA-384 as the HMACs
+   for data integrity protection as well as its use for HKDF.  The
+   authentication mechanisms remain unchanged with the intent to only
+   update the cipher suites to relax the need for confidentiality.
+
+5.  IANA Considerations
+
+   IANA is requested to register the following:
+
+   This document requests a numbers be assigned for each
+   TLS_SHA256_SHA256 and TLS_SHA384_SHA384 cipher suites.
+
+6.  Security and Privacy Considerations
+
+   In general, with the exception of confidentiality and privacy, the
+   security considerations detailed in [I-D.ietf-tls-tls13] and in
+   [RFC5246] apply to this document.  Furthermore, as the cipher suites
+   described in this document do not provide any confidentiality, it is
+   important that they only be used in cases where there are no
+   confidentiality requirements and concerns; and the runtime memory
+   requirements can accomodate support for more cryptographic
+   constructs.
+
+   With the lack of an data encryption specified in this draft, no
+   confidentiality or privacy is provided for the data transported in
+   the the TLS tunnel.
+
+
+
+
+
+Cam-Winget & Visoky      Expires August 27, 2018                [Page 4]
+
+Internet-Draft                 IoT Ciphers                 February 2018
+
+
+7.  Acknowledgements
 
    The authors would like to acknowledge the work done by Industrial
    Communications Standards Groups (such as ODVA) as the motivation for
    this document.
 
-7.  Normative References
+8.  References
+
+8.1.  Normative References
+
+   [I-D.ietf-tls-tls13]
+              Rescorla, E., "The Transport Layer Security (TLS) Protocol
+              Version 1.3", draft-ietf-tls-tls13-24 (work in progress),
+              February 2018.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/info/rfc2119>.
 
-   [RFC4492]  Blake-Wilson, S., Bolyard, N., Gupta, V., Hawk, C., and B.
-              Moeller, "Elliptic Curve Cryptography (ECC) Cipher Suites
-              for Transport Layer Security (TLS)", RFC 4492,
-              DOI 10.17487/RFC4492, May 2006,
-              <https://www.rfc-editor.org/info/rfc4492>.
+   [RFC5489]  Badra, M. and I. Hajjeh, "ECDHE_PSK Cipher Suites for
+              Transport Layer Security (TLS)", RFC 5489,
+              DOI 10.17487/RFC5489, March 2009,
+              <https://www.rfc-editor.org/info/rfc5489>.
+
+8.2.  Informative Reference
 
    [RFC5246]  Dierks, T. and E. Rescorla, "The Transport Layer Security
               (TLS) Protocol Version 1.2", RFC 5246,
               DOI 10.17487/RFC5246, August 2008,
               <https://www.rfc-editor.org/info/rfc5246>.
 
-   [RFC5489]  Badra, M. and I. Hajjeh, "ECDHE_PSK Cipher Suites for
-              Transport Layer Security (TLS)", RFC 5489,
-              DOI 10.17487/RFC5489, March 2009,
-              <https://www.rfc-editor.org/info/rfc5489>.
-
 Authors' Addresses
 
-   Nancy Cam-Winget (editor)
+   Nancy Cam-Winget
    Cisco Systems
    3550 Cisco Way
    San Jose, CA  95134
@@ -221,7 +277,7 @@ Authors' Addresses
 
 
 
-Cam-Winget & Visoky      Expires August 18, 2018                [Page 4]
+Cam-Winget & Visoky      Expires August 27, 2018                [Page 5]
 
 Internet-Draft                 IoT Ciphers                 February 2018
 
@@ -277,4 +333,4 @@ Internet-Draft                 IoT Ciphers                 February 2018
 
 
 
-Cam-Winget & Visoky      Expires August 18, 2018                [Page 5]
+Cam-Winget & Visoky      Expires August 27, 2018                [Page 6]
