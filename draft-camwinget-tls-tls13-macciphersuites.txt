@@ -5,8 +5,8 @@
 TLS                                                        N. Cam-Winget
 Internet-Draft                                             Cisco Systems
 Intended status: Informational                                 J. Visoky
-Expires: August 27, 2018                                            ODVA
-                                                       February 23, 2018
+Expires: August 30, 2018                                            ODVA
+                                                       February 26, 2018
 
 
          TLS 1.3 Authentication and Integrity only Ciphersuites
@@ -35,7 +35,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on August 27, 2018.
+   This Internet-Draft will expire on August 30, 2018.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Cam-Winget & Visoky      Expires August 27, 2018                [Page 1]
+Cam-Winget & Visoky      Expires August 30, 2018                [Page 1]
 
 Internet-Draft                 IoT Ciphers                 February 2018
 
@@ -95,7 +95,7 @@ Table of Contents
    systems still gain great benefit from leveraging TLS 1.3 for secure
    communications.  Given the reduced need for confidentiality TLS 1.3
    [I-D.ietf-tls-tls13] cipher suites that maintain data integrity
-   without confidentiality is described in this document.
+   without confidentiality are described in this document.
 
 2.  Terminology
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Cam-Winget & Visoky      Expires August 27, 2018                [Page 2]
+Cam-Winget & Visoky      Expires August 30, 2018                [Page 2]
 
 Internet-Draft                 IoT Ciphers                 February 2018
 
@@ -122,9 +122,9 @@ Internet-Draft                 IoT Ciphers                 February 2018
    prioritized.  This section describes some of those applicable use
    cases.
 
-   Use cases in the industrial automation industry while requiring data
+   Use cases in the industrial automation industry, while requiring data
    integrity, relax the confidential communications requirement.
-   Mainly, information communicated to unmmaned machines to execute
+   Mainly, information communicated to unmanned machines to execute
    repetitive tasks do not convey private information.  For example,
    there could be a system with a robotic arm that is doing high speed
    pick-and-place of materials.  The position synchronization data and
@@ -153,7 +153,7 @@ Internet-Draft                 IoT Ciphers                 February 2018
    synchronization updates are very fine-grained, it is again important
    for latency to be very low.
 
-   A third use case deals with Alarming data.  When industrial control
+   A third use case deals with Alarming data.  Industrial control
    sensing equipment can be configured to send alarm information when it
    meets certain conditions.  Often times this data is used to detect
    certain out-of-tolerance conditions, allowing an operator or
@@ -165,7 +165,7 @@ Internet-Draft                 IoT Ciphers                 February 2018
 
 
 
-Cam-Winget & Visoky      Expires August 27, 2018                [Page 3]
+Cam-Winget & Visoky      Expires August 30, 2018                [Page 3]
 
 Internet-Draft                 IoT Ciphers                 February 2018
 
@@ -210,10 +210,10 @@ Internet-Draft                 IoT Ciphers                 February 2018
    described in this document do not provide any confidentiality, it is
    important that they only be used in cases where there are no
    confidentiality requirements and concerns; and the runtime memory
-   requirements can accomodate support for more cryptographic
+   requirements can accommodate support for more cryptographic
    constructs.
 
-   With the lack of an data encryption specified in this draft, no
+   With the lack of data encryption specified in this draft, no
    confidentiality or privacy is provided for the data transported in
    the the TLS tunnel.
 
@@ -221,7 +221,7 @@ Internet-Draft                 IoT Ciphers                 February 2018
 
 
 
-Cam-Winget & Visoky      Expires August 27, 2018                [Page 4]
+Cam-Winget & Visoky      Expires August 30, 2018                [Page 4]
 
 Internet-Draft                 IoT Ciphers                 February 2018
 
@@ -277,7 +277,7 @@ Authors' Addresses
 
 
 
-Cam-Winget & Visoky      Expires August 27, 2018                [Page 5]
+Cam-Winget & Visoky      Expires August 30, 2018                [Page 5]
 
 Internet-Draft                 IoT Ciphers                 February 2018
 
@@ -333,4 +333,4 @@ Internet-Draft                 IoT Ciphers                 February 2018
 
 
 
-Cam-Winget & Visoky      Expires August 27, 2018                [Page 6]
+Cam-Winget & Visoky      Expires August 30, 2018                [Page 6]
