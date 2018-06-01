@@ -3,8 +3,8 @@
   <!ENTITY RFC2119 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml">
   <!ENTITY RFC4492 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4492.xml">
   <!ENTITY RFC5246 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5246.xml">
-  <!ENTITY RFC5489 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5489.xml">
-  <!ENTITY I-D.ietf-tls-tls13 SYSTEM "https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-tls-tls13.xml">
+  <!ENTITY RFC4634 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4634.xml">
+<!ENTITY I-D.ietf-tls-tls13 SYSTEM "https://xml2rfc.tools.ietf.org/public/rfc/bibxml3/reference.I-D.ietf-tls-tls13.xml">
   ]>
 <?xml-stylesheet type="text/xsl" href="rfc2629.xslt" ?>
 <!-- OPTIONS, known as processing instructions (PIs) go here. -->
@@ -106,9 +106,21 @@
             </list> </t>
         <t>
             These cipher suites allow the use of SHA-256 or SHA-384 as the HMACs for data integrity protection as well as its use for HKDF. The authentication mechanisms remain unchanged with the intent to only update the cipher suites to relax the need for confidentiality.</t>
-      
-      
     </section>
+    
+    <section title="Record Payload Protection for Integrity only Cipher Suites">
+        <t> The record payload protection as defined in <xref target="I-D.ietf-tls-tls13"/> can be retained when integrity only cipher suites.
+            This section describes the mapping of record payload structures when integrity only cipher suites are employed.
+            </t>
+        
+        <t> As integrity only is provided with protection over the full record, the encrypted_record in the TLSCiphertext along with the additional_data input to AEADEncrypted as defined in Section 5.2 <xref target="I-D.ietf-tls-tls13"/> remains the same.
+            The TLSCiphertext.length for the integrity cipher suites will be: </t>
+        <t> <list style='hanging'>
+            <t hangText='TLS_SHA256_SHA256:'>   TLSPlaintext.length + 32</t>
+            <t hangText='TLS_SHA384_SHA384:'>   TLSPlaintext.length + 64</t>
+        </list> </t>
+        <t> The resulting encrypted_record is the concatenation of the TLSPlaintext with the resulting HMAC. With this mapping, the decrypt order as defined in Section 5.2 of  <xref target="I-D.ietf-tls-tls13"/> remains the same. The encrypt and decrypt operations provide the integrity protection using HMAC SHA-256 or SHA-384 as described in <xref target="RFC4634"/>.</t>
+        </section>
 
 
     <section anchor="IANA" title="IANA Considerations">
@@ -123,15 +135,14 @@
     </section>
    
     <section anchor="Acknowledgements" title="Acknowledgements">
-      <t>The authors would like to acknowledge the work done by Industrial Communications Standards Groups (such as ODVA) as the motivation for this document.</t>
+      <t>The authors would like to acknowledge the work done by Industrial Communications Standards Groups (such as ODVA) as the motivation for this document. In addition, we are grateful for the advice and feedback from Joe Salowey.</t>
     </section>
   </middle>
   <back>
     <references title="Normative References">
       &RFC2119;
       &I-D.ietf-tls-tls13;
-      
-      &RFC5489;
+      &RFC4634;
 
     </references>
     <references title="Informative Reference">
