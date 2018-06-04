@@ -109,11 +109,11 @@
     </section>
     
     <section title="Record Payload Protection for Integrity only Cipher Suites">
-        <t> The record payload protection as defined in <xref target="I-D.ietf-tls-tls13"/> can be retained when integrity only cipher suites.
+        <t> The record payload protection as defined in <xref target="I-D.ietf-tls-tls13"/> can be retained when integrity only cipher suites are used.
             This section describes the mapping of record payload structures when integrity only cipher suites are employed.
             </t>
         
-        <t> As integrity only is provided with protection over the full record, the encrypted_record in the TLSCiphertext along with the additional_data input to AEADEncrypted as defined in Section 5.2 <xref target="I-D.ietf-tls-tls13"/> remains the same.
+        <t> As integrity is provided with protection over the full record, the encrypted_record in the TLSCiphertext along with the additional_data input to AEADEncrypted as defined in Section 5.2 <xref target="I-D.ietf-tls-tls13"/> remains the same.
             The TLSCiphertext.length for the integrity cipher suites will be: </t>
         <t> <list style='hanging'>
             <t hangText='TLS_SHA256_SHA256:'>   TLSPlaintext.length + 32</t>
