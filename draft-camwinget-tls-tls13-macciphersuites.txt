@@ -5,8 +5,8 @@
 TLS                                                        N. Cam-Winget
 Internet-Draft                                             Cisco Systems
 Intended status: Informational                                 J. Visoky
-Expires: December 2, 2018                                           ODVA
-                                                            May 31, 2018
+Expires: December 6, 2018                                           ODVA
+                                                            June 4, 2018
 
 
          TLS 1.3 Authentication and Integrity only Ciphersuites
@@ -35,7 +35,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on December 2, 2018.
+   This Internet-Draft will expire on December 6, 2018.
 
 Copyright Notice
 
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Cam-Winget & Visoky     Expires December 2, 2018                [Page 1]
+Cam-Winget & Visoky     Expires December 6, 2018                [Page 1]
 
-Internet-Draft                 IoT Ciphers                      May 2018
+Internet-Draft                 IoT Ciphers                     June 2018
 
 
    the Trust Legal Provisions and are provided without warranty as
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Cam-Winget & Visoky     Expires December 2, 2018                [Page 2]
+Cam-Winget & Visoky     Expires December 6, 2018                [Page 2]
 
-Internet-Draft                 IoT Ciphers                      May 2018
+Internet-Draft                 IoT Ciphers                     June 2018
 
 
 3.  Applicability Statement
@@ -165,9 +165,9 @@ Internet-Draft                 IoT Ciphers                      May 2018
 
 
 
-Cam-Winget & Visoky     Expires December 2, 2018                [Page 3]
+Cam-Winget & Visoky     Expires December 6, 2018                [Page 3]
 
-Internet-Draft                 IoT Ciphers                      May 2018
+Internet-Draft                 IoT Ciphers                     June 2018
 
 
    alarms falsely or to cover up evidence of an attack that might allow
@@ -198,15 +198,15 @@ Internet-Draft                 IoT Ciphers                      May 2018
 5.  Record Payload Protection for Integrity only Cipher Suites
 
    The record payload protection as defined in [I-D.ietf-tls-tls13] can
-   be retained when integrity only cipher suites.  This section
+   be retained when integrity only cipher suites are used.  This section
    describes the mapping of record payload structures when integrity
    only cipher suites are employed.
 
-   As integrity only is provided with protection over the full record,
-   the encrypted_record in the TLSCiphertext along with the
-   additional_data input to AEADEncrypted as defined in Section 5.2
-   [I-D.ietf-tls-tls13] remains the same.  The TLSCiphertext.length for
-   the integrity cipher suites will be:
+   As integrity is provided with protection over the full record, the
+   encrypted_record in the TLSCiphertext along with the additional_data
+   input to AEADEncrypted as defined in Section 5.2 [I-D.ietf-tls-tls13]
+   remains the same.  The TLSCiphertext.length for the integrity cipher
+   suites will be:
 
    TLS_SHA256_SHA256:  TLSPlaintext.length + 32
 
@@ -221,9 +221,9 @@ Internet-Draft                 IoT Ciphers                      May 2018
 
 
 
-Cam-Winget & Visoky     Expires December 2, 2018                [Page 4]
+Cam-Winget & Visoky     Expires December 6, 2018                [Page 4]
 
-Internet-Draft                 IoT Ciphers                      May 2018
+Internet-Draft                 IoT Ciphers                     June 2018
 
 
 6.  IANA Considerations
@@ -277,9 +277,9 @@ Internet-Draft                 IoT Ciphers                      May 2018
 
 
 
-Cam-Winget & Visoky     Expires December 2, 2018                [Page 5]
+Cam-Winget & Visoky     Expires December 6, 2018                [Page 5]
 
-Internet-Draft                 IoT Ciphers                      May 2018
+Internet-Draft                 IoT Ciphers                     June 2018
 
 
 9.2.  Informative Reference
@@ -333,4 +333,4 @@ Authors' Addresses
 
 
 
-Cam-Winget & Visoky     Expires December 2, 2018                [Page 6]
+Cam-Winget & Visoky     Expires December 6, 2018                [Page 6]
