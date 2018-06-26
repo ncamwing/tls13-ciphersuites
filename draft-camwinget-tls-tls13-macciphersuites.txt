@@ -1,12 +1,12 @@
-
+a
 
 
 
 TLS                                                        N. Cam-Winget
 Internet-Draft                                             Cisco Systems
 Intended status: Informational                                 J. Visoky
-Expires: December 6, 2018                                           ODVA
-                                                            June 4, 2018
+Expires: December 27, 2018                                          ODVA
+                                                           June 25, 2018
 
 
          TLS 1.3 Authentication and Integrity only Ciphersuites
@@ -35,7 +35,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on December 6, 2018.
+   This Internet-Draft will expire on December 27, 2018.
 
 Copyright Notice
 
@@ -53,7 +53,7 @@ Copyright Notice
 
 
 
-Cam-Winget & Visoky     Expires December 6, 2018                [Page 1]
+Cam-Winget & Visoky     Expires December 27, 2018               [Page 1]
 
 Internet-Draft                 IoT Ciphers                     June 2018
 
@@ -64,16 +64,17 @@ Internet-Draft                 IoT Ciphers                     June 2018
 Table of Contents
 
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
-   2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   2
+   2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   3
    3.  Applicability Statement . . . . . . . . . . . . . . . . . . .   3
    4.  Using Integrity only Cipher Suites  . . . . . . . . . . . . .   4
    5.  Record Payload Protection for Integrity only Cipher Suites  .   4
-   6.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   5
-   7.  Security and Privacy Considerations . . . . . . . . . . . . .   5
-   8.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   5
-   9.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   5
-     9.1.  Normative References  . . . . . . . . . . . . . . . . . .   5
-     9.2.  Informative Reference . . . . . . . . . . . . . . . . . .   6
+   6.  Key Schedule when using Integrity only Cipher Suites  . . . .   5
+   7.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   5
+   8.  Security and Privacy Considerations . . . . . . . . . . . . .   5
+   9.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   5
+   10. References  . . . . . . . . . . . . . . . . . . . . . . . . .   5
+     10.1.  Normative References . . . . . . . . . . . . . . . . . .   6
+     10.2.  Informative Reference  . . . . . . . . . . . . . . . . .   6
    Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   6
 
 1.  Introduction
@@ -85,9 +86,12 @@ Table of Contents
    which command a robotic arm to move a certain distance at a certain
    speed.  Without authenticity guarantees an attacker could modify the
    packets to change the movement of the robotic arm, potentially
-   causing physical damage.  However, a threat model would very likely
-   show that there is little to no need for confidentiality of this
-   communication, as the packets only contain simple I/O commands.
+   causing physical damage.  However, the motion control commands are
+   not considered to be sensitive information and thus there is no
+   requirement to provide confidentiality.  Another IoT example with no
+   strong requirement for confidentiality is the reporting of weather
+   information; however, message authenticity is required to ensure
+   integrity of the message..
 
    Besides having a strong need for authenticity and a weak need for
    confidentiality, many of these systems also have serious latency
@@ -98,21 +102,23 @@ Table of Contents
    [I-D.ietf-tls-tls13] cipher suites that maintain data integrity
    without confidentiality are described in this document.
 
+
+
+
+
+
+
+
+Cam-Winget & Visoky     Expires December 27, 2018               [Page 2]
+
+Internet-Draft                 IoT Ciphers                     June 2018
+
+
 2.  Terminology
 
    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
    "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
    document are to be interpreted as described in [RFC2119].
-
-
-
-
-
-
-Cam-Winget & Visoky     Expires December 6, 2018                [Page 2]
-
-Internet-Draft                 IoT Ciphers                     June 2018
-
 
 3.  Applicability Statement
 
@@ -156,20 +162,20 @@ Internet-Draft                 IoT Ciphers                     June 2018
    A third use case deals with Alarming data.  Industrial control
    sensing equipment can be configured to send alarm information when it
    meets certain conditions.  Often times this data is used to detect
+
+
+
+Cam-Winget & Visoky     Expires December 27, 2018               [Page 3]
+
+Internet-Draft                 IoT Ciphers                     June 2018
+
+
    certain out-of-tolerance conditions, allowing an operator or
    automated system to take corrective action.  Once again, in many
    systems the reading of this data doesn't grant the attacker
    information that can be exploited, it is generally just information
    regarding the physical state of the system.  At the same time, being
    able to modify this data would allow an attacker to either trigger
-
-
-
-Cam-Winget & Visoky     Expires December 6, 2018                [Page 3]
-
-Internet-Draft                 IoT Ciphers                     June 2018
-
-
    alarms falsely or to cover up evidence of an attack that might allow
    for detection of their malicious activity.  Furthermore, sensors are
    often low powered devices that might struggle to process encrypted
@@ -212,28 +218,35 @@ Internet-Draft                 IoT Ciphers                     June 2018
 
    TLS_SHA384_SHA384:  TLSPlaintext.length + 64
 
+
+
+
+Cam-Winget & Visoky     Expires December 27, 2018               [Page 4]
+
+Internet-Draft                 IoT Ciphers                     June 2018
+
+
    The resulting encrypted_record is the concatenation of the
    TLSPlaintext with the resulting HMAC.  With this mapping, the decrypt
    order as defined in Section 5.2 of [I-D.ietf-tls-tls13] remains the
    same.  The encrypt and decrypt operations provide the integrity
    protection using HMAC SHA-256 or SHA-384 as described in [RFC4634].
 
+6.  Key Schedule when using Integrity only Cipher Suites
 
+   The key derivation process for Integrity only Cipher Suites remains
+   the same as defined in [I-D.ietf-tls-tls13].  The only difference is
+   that the keys used to protect the tunnel applies to the negotiated
+   HMAC SHA-256 or HMAC SHA-384 ciphers.
 
-
-Cam-Winget & Visoky     Expires December 6, 2018                [Page 4]
-
-Internet-Draft                 IoT Ciphers                     June 2018
-
-
-6.  IANA Considerations
+7.  IANA Considerations
 
    IANA is requested to register the following:
 
    This document requests a numbers be assigned for each
    TLS_SHA256_SHA256 and TLS_SHA384_SHA384 cipher suites.
 
-7.  Security and Privacy Considerations
+8.  Security and Privacy Considerations
 
    In general, with the exception of confidentiality and privacy, the
    security considerations detailed in [I-D.ietf-tls-tls13] and in
@@ -248,16 +261,28 @@ Internet-Draft                 IoT Ciphers                     June 2018
    confidentiality or privacy is provided for the data transported in
    the the TLS tunnel.
 
-8.  Acknowledgements
+9.  Acknowledgements
 
    The authors would like to acknowledge the work done by Industrial
    Communications Standards Groups (such as ODVA) as the motivation for
    this document.  In addition, we are grateful for the advice and
-   feedback from Joe Salowey.
+   feedback from Joe Salowey, Blake Anderson and David McGrew.
 
-9.  References
+10.  References
 
-9.1.  Normative References
+
+
+
+
+
+
+
+Cam-Winget & Visoky     Expires December 27, 2018               [Page 5]
+
+Internet-Draft                 IoT Ciphers                     June 2018
+
+
+10.1.  Normative References
 
    [I-D.ietf-tls-tls13]
               Rescorla, E., "The Transport Layer Security (TLS) Protocol
@@ -273,16 +298,7 @@ Internet-Draft                 IoT Ciphers                     June 2018
               (SHA and HMAC-SHA)", RFC 4634, DOI 10.17487/RFC4634, July
               2006, <https://www.rfc-editor.org/info/rfc4634>.
 
-
-
-
-
-Cam-Winget & Visoky     Expires December 6, 2018                [Page 5]
-
-Internet-Draft                 IoT Ciphers                     June 2018
-
-
-9.2.  Informative Reference
+10.2.  Informative Reference
 
    [RFC5246]  Dierks, T. and E. Rescorla, "The Transport Layer Security
               (TLS) Protocol Version 1.2", RFC 5246,
@@ -317,20 +333,4 @@ Authors' Addresses
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Cam-Winget & Visoky     Expires December 6, 2018                [Page 6]
+Cam-Winget & Visoky     Expires December 27, 2018               [Page 6]

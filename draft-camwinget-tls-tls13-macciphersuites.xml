@@ -74,7 +74,7 @@
   <middle>
 
     <section title="Introduction">
-      <t>There are several use cases in which communications privacy is not strictly needed, although authenticity of the communications transport is still very important.  For example, within the Industrial Automation space there could be TCP or UDP communications which command a robotic arm to move a certain distance at a certain speed.  Without authenticity guarantees an attacker could modify the packets to change the movement of the robotic arm, potentially causing physical damage.  However, a threat model would very likely show that there is little to no need for confidentiality of this communication, as the packets only contain simple I/O commands.</t>
+        <t>There are several use cases in which communications privacy is not strictly needed, although authenticity of the communications transport is still very important.  For example, within the Industrial Automation space there could be TCP or UDP communications which command a robotic arm to move a certain distance at a certain speed.  Without authenticity guarantees an attacker could modify the packets to change the movement of the robotic arm, potentially causing physical damage.  However, the motion control commands are not considered to be sensitive information and thus there is no requirement to provide confidentiality. Another IoT example with no strong requirement for confidentiality is the reporting of weather information; however, message authenticity is required to ensure integrity of the message..</t>
       <t>Besides having a strong need for authenticity and a weak need for confidentiality, many of these systems also have serious latency requirements.  Furthermore, several IoT devices (industrial or otherwise) have limited processing capability.  However, these IoT systems still gain great benefit from leveraging TLS 1.3 for secure communications.  Given the reduced need for confidentiality TLS 1.3 <xref target="I-D.ietf-tls-tls13"/> cipher suites that maintain data integrity without confidentiality are described in this document. </t>
      
 
@@ -121,6 +121,10 @@
         </list> </t>
         <t> The resulting encrypted_record is the concatenation of the TLSPlaintext with the resulting HMAC. With this mapping, the decrypt order as defined in Section 5.2 of  <xref target="I-D.ietf-tls-tls13"/> remains the same. The encrypt and decrypt operations provide the integrity protection using HMAC SHA-256 or SHA-384 as described in <xref target="RFC4634"/>.</t>
         </section>
+    
+    <section title="Key Schedule when using Integrity only Cipher Suites">
+        <t> The key derivation process for Integrity only Cipher Suites remains the same as defined in <xref target="I-D.ietf-tls-tls13"/>.  The only difference is that the keys used to protect the tunnel applies to the negotiated HMAC SHA-256 or HMAC SHA-384 ciphers. </t>
+        </section>
 
 
     <section anchor="IANA" title="IANA Considerations">
@@ -135,7 +139,7 @@
     </section>
    
     <section anchor="Acknowledgements" title="Acknowledgements">
-      <t>The authors would like to acknowledge the work done by Industrial Communications Standards Groups (such as ODVA) as the motivation for this document. In addition, we are grateful for the advice and feedback from Joe Salowey.</t>
+      <t>The authors would like to acknowledge the work done by Industrial Communications Standards Groups (such as ODVA) as the motivation for this document. In addition, we are grateful for the advice and feedback from Joe Salowey, Blake Anderson and David McGrew.</t>
     </section>
   </middle>
   <back>
