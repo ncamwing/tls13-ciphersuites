@@ -185,8 +185,8 @@ Internet-Draft                 IoT Ciphers                  October 2018
 
    The above use cases describe the relaxed requirements to provide
    confidentiality, and as these devices come with a small runtime
-   memory footprint, the need to minimize the number of cryptographic
-   algorithms used is prioritized.
+   memory footprint and reduced processing power, the need to minimize
+   the number of cryptographic algorithms used is prioritized.
 
 4.  Using Integrity only Cipher Suites
 
