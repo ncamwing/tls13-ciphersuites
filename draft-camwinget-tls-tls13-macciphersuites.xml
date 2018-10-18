@@ -30,7 +30,7 @@
 <?rfc subcompact="no" ?>
 <!-- keep one blank line between list items -->
 <!-- end of popular PIs -->
-<rfc category="info" docName="draft-camwinget-tls-ts13-macciphersuites-00" ipr="trust200902">
+<rfc category="info" docName="draft-camwinget-tls-ts13-macciphersuites-01" ipr="trust200902">
   <front>
     <title abbrev="IoT Ciphers">TLS 1.3 Authentication and Integrity only Ciphersuites</title>
     <author fullname="Nancy Cam-Winget" initials="N" surname="Cam-Winget">
@@ -133,9 +133,11 @@
     </section>
 
     <section anchor="Security" title="Security and Privacy Considerations">
-        <t>In general, with the exception of confidentiality and privacy, the security considerations detailed in <xref target="I-D.ietf-tls-tls13"/> and in <xref target="RFC5246"/> apply to this document.  Furthermore, as the cipher suites described in this document do not provide any confidentiality, it is important that they only be used in cases where there are no confidentiality requirements and concerns; and the runtime memory requirements can accommodate support for more cryptographic constructs.</t>
-      <t>With the lack of data encryption specified in this draft, no confidentiality or privacy is provided for the data transported in the the TLS tunnel.
+        <t>In general, with the exception of confidentiality and privacy, the security considerations detailed in <xref target="I-D.ietf-tls-tls13"/> and in <xref target="RFC5246"/> apply to this document.  Furthermore, as the cipher suites described in this document do not provide any confidentiality, it is important that they only be used in cases where there are no confidentiality or privacy requirements and concerns; and the runtime memory requirements can accommodate support for more cryptographic constructs.</t>
+        <t>With the lack of data encryption specified in this draft, no confidentiality or privacy is provided for the data transported in the the TLS tunnel.  To highlight the loss of privacy, the information carried in both the Server and Client certificates, while integrity protected, will be sent unencrypted.  Similarly, other TLS extensions that may be carried in the Server's EncryptedExtensions message will only be integrity protected without provisions for confidentiality.
       </t>
+    
+        
     </section>
    
     <section anchor="Acknowledgements" title="Acknowledgements">
