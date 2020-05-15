@@ -5,12 +5,12 @@
 TLS                                                        N. Cam-Winget
 Internet-Draft                                             Cisco Systems
 Intended status: Informational                                 J. Visoky
-Expires: July 6, 2020                                               ODVA
-                                                         January 3, 2020
+Expires: November 16, 2020                                          ODVA
+                                                            May 15, 2020
 
 
         TLS 1.3 Authentication and Integrity only Cipher Suites
-              draft-camwinget-tls-ts13-macciphersuites-05
+              draft-camwinget-tls-ts13-macciphersuites-06
 
 Abstract
 
@@ -35,7 +35,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on July 6, 2020.
+   This Internet-Draft will expire on November 16, 2020.
 
 Copyright Notice
 
@@ -53,9 +53,9 @@ Copyright Notice
 
 
 
-Cam-Winget & Visoky       Expires July 6, 2020                  [Page 1]
+Cam-Winget & Visoky     Expires November 16, 2020               [Page 1]
 
-Internet-Draft                 IoT Ciphers                  January 2020
+Internet-Draft                 IoT Ciphers                      May 2020
 
 
    the Trust Legal Provisions and are provided without warranty as
@@ -68,15 +68,15 @@ Table of Contents
    3.  Applicability Statement . . . . . . . . . . . . . . . . . . .   3
    4.  Cryptographic Negotiation Using Integrity only Cipher Suites    4
    5.  Record Payload Protection for Integrity only Cipher Suites  .   5
-   6.  Key Schedule when using Integrity only Cipher Suites  . . . .   5
+   6.  Key Schedule when using Integrity only Cipher Suites  . . . .   6
    7.  Error Alerts  . . . . . . . . . . . . . . . . . . . . . . . .   6
    8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   6
-   9.  Security and Privacy Considerations . . . . . . . . . . . . .   6
+   9.  Security and Privacy Considerations . . . . . . . . . . . . .   7
    10. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   7
    11. References  . . . . . . . . . . . . . . . . . . . . . . . . .   7
      11.1.  Normative References . . . . . . . . . . . . . . . . . .   7
-     11.2.  Informative Reference  . . . . . . . . . . . . . . . . .   7
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   7
+     11.2.  Informative Reference  . . . . . . . . . . . . . . . . .   8
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   8
 
 1.  Introduction
 
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Cam-Winget & Visoky       Expires July 6, 2020                  [Page 2]
+Cam-Winget & Visoky     Expires November 16, 2020               [Page 2]
 
-Internet-Draft                 IoT Ciphers                  January 2020
+Internet-Draft                 IoT Ciphers                      May 2020
 
 
 2.  Terminology
@@ -165,9 +165,9 @@ Internet-Draft                 IoT Ciphers                  January 2020
 
 
 
-Cam-Winget & Visoky       Expires July 6, 2020                  [Page 3]
+Cam-Winget & Visoky     Expires November 16, 2020               [Page 3]
 
-Internet-Draft                 IoT Ciphers                  January 2020
+Internet-Draft                 IoT Ciphers                      May 2020
 
 
    A third use case deals with Alarming data.  Industrial control
@@ -221,9 +221,9 @@ Internet-Draft                 IoT Ciphers                  January 2020
 
 
 
-Cam-Winget & Visoky       Expires July 6, 2020                  [Page 4]
+Cam-Winget & Visoky     Expires November 16, 2020               [Page 4]
 
-Internet-Draft                 IoT Ciphers                  January 2020
+Internet-Draft                 IoT Ciphers                      May 2020
 
 
    authentication mechanisms remain unchanged with the intent to only
@@ -236,8 +236,8 @@ Internet-Draft                 IoT Ciphers                  January 2020
 5.  Record Payload Protection for Integrity only Cipher Suites
 
    Given that there is no encryption to be done at the record layer, the
-   operations "Protect" and "Unprotect" take the place of "AEAD_Encrypt"
-   and "AEAD_Decrypt", respectively.
+   operations "Protect" and "Unprotect" take the place of "AEAD-Encrypt"
+   and "AEAD-Decrypt", respectively.
 
    The record payload protection as defined in [RFC8446] can be retained
    when integrity only cipher suites are used.  This section describes
@@ -250,20 +250,40 @@ Internet-Draft                 IoT Ciphers                  January 2020
    defined in Section 5.2 [RFC8446] remains the same.  The
    TLSCiphertext.length for the integrity cipher suites will be:
 
-   TLS_SHA256_SHA256:  TLSPlaintext.length + 32
+   TLS_SHA256_SHA256:  TLSCiphertext.length = TLSPlaintext.length + 1
+      (type field) + length_of_padding + 32 (HMAC) =
+      TLSInnerPlaintext_length + 32 (HMAC)
 
-   TLS_SHA384_SHA384:  TLSPlaintext.length + 48
+   TLS_SHA384_SHA384:  TLSCiphertext.length = TLSPlaintext.length + 1
+      (type field) + length_of_padding + 48 (HMAC) =
+      TLSInnerPlaintext_length + 48 (HMAC)
+
+   Note that TLSInnerPlaintext_length is not defined as an explicit
+   field in [RFC8446], this refers to the length of the
+   TLSInnterPlaintext structure
 
    The resulting protected_record is the concatenation of the
-   TLSPlaintext with the resulting HMAC.  With this mapping, the record
-   validation order as defined in Section 5.2 of [RFC8446] remains the
-   same.  That is, the HMAC operation is of the form:
+   TLSInnerPlaintext with the resulting HMAC.  With this mapping, the
+   record validation order as defined in Section 5.2 of [RFC8446]
+   remains the same.  That is, encrypted_record field of TLSCiphertext
+   is set to:
 
-   TLS13-HMAC-Protected = HMAC-Protect(plaintext || HMAC(write_key,
-   nonce || additional_data || plaintext)
+   TLSCiphertext = TLS13-HMAC-Protected = TLSInnerPlaintext ||
+   HMAC(write_key, nonce || additional_data || TLSInnerPlaintext)
+
+   Here "nonce" refers to the per-record nonce described in section 5.3
+   of [RFC8446].
+
+
+
+
+Cam-Winget & Visoky     Expires November 16, 2020               [Page 5]
+
+Internet-Draft                 IoT Ciphers                      May 2020
+
 
    The Protect and Unprotect operations provide the integrity protection
-   using HMAC SHA-256 or SHA-384 as described in [RFC4634].
+   using HMAC SHA-256 or SHA-384 as described in [RFC6234].
 
    Due to the lack of encryption of the plaintext, record padding is not
    needed, although it can be optionally included.
@@ -273,14 +293,19 @@ Internet-Draft                 IoT Ciphers                  January 2020
    The key derivation process for Integrity only Cipher Suites remains
    the same as defined in [RFC8446].  The only difference is that the
    keys used to protect the tunnel applies to the negotiated HMAC
-   SHA-256 or HMAC SHA-384 ciphers.
+   SHA-256 or HMAC SHA-384 ciphers.  Note that the traffic key material
+   (client_write_key, client_write_iv, server_write_key and
+   server_write_iv) MUST be calculated as per RFC 8446, section 7.3.
+   The key lengths and IVs for these cipher suites are according to the
+   hash lenghts.  In other words, the following key lenghts and IV
+   lengths SHALL be:
 
-
-
-Cam-Winget & Visoky       Expires July 6, 2020                  [Page 5]
-
-Internet-Draft                 IoT Ciphers                  January 2020
-
+              +-------------------+------------+-----------+
+              | Cipher Suite      | Key Length | IV Length |
+              +-------------------+------------+-----------+
+              | TLS_SHA256_SHA256 | 32 Bytes   | 32 Bytes  |
+              | TLS_SHA384_SHA384 | 48 Bytes   | 48 Bytes  |
+              +-------------------+------------+-----------+
 
 7.  Error Alerts
 
@@ -303,6 +328,15 @@ Internet-Draft                 IoT Ciphers                  January 2020
 
    TLS_SHA256_SHA256 {0xC0, 0xB4} cipher suite and TLS_SHA384_SHA384
    {0xC0, 0xB5} cipher suite.
+
+
+
+
+
+Cam-Winget & Visoky     Expires November 16, 2020               [Page 6]
+
+Internet-Draft                 IoT Ciphers                      May 2020
+
 
    Note that both of these cipher suites are registered with the DTLS-OK
    column set to Y and the Recommneded column set to N
@@ -329,15 +363,6 @@ Internet-Draft                 IoT Ciphers                  January 2020
    this lack of confidentiality, PSK data MUST NOT be sent in the
    handshake while using these cipher suites.
 
-
-
-
-
-Cam-Winget & Visoky       Expires July 6, 2020                  [Page 6]
-
-Internet-Draft                 IoT Ciphers                  January 2020
-
-
    Given the lack of confidentiality, it is of the utmost importance
    that these cipher suites never be enabled by default.  As these
    cipher suites are meant to serve the IoT market, it is important that
@@ -350,8 +375,8 @@ Internet-Draft                 IoT Ciphers                  January 2020
    Communications Standards Groups (such as ODVA) as the motivation for
    this document.  We would also like to thank Steffen Fries for
    providing a fourth use case.  In addition, we are grateful for the
-   advice and feedback from Joe Salowey, Blake Anderson and David
-   McGrew.
+   advice and feedback from Joe Salowey, Blake Anderson, David McGrew,
+   Clement Zeller, and Peter Wu.
 
 11.  References
 
@@ -362,9 +387,17 @@ Internet-Draft                 IoT Ciphers                  January 2020
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/info/rfc2119>.
 
-   [RFC4634]  Eastlake 3rd, D. and T. Hansen, "US Secure Hash Algorithms
-              (SHA and HMAC-SHA)", RFC 4634, DOI 10.17487/RFC4634, July
-              2006, <https://www.rfc-editor.org/info/rfc4634>.
+
+
+Cam-Winget & Visoky     Expires November 16, 2020               [Page 7]
+
+Internet-Draft                 IoT Ciphers                      May 2020
+
+
+   [RFC6234]  Eastlake 3rd, D. and T. Hansen, "US Secure Hash Algorithms
+              (SHA and SHA-based HMAC and HKDF)", RFC 6234,
+              DOI 10.17487/RFC6234, May 2011,
+              <https://www.rfc-editor.org/info/rfc6234>.
 
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
@@ -382,17 +415,6 @@ Internet-Draft                 IoT Ciphers                  January 2020
               <https://www.rfc-editor.org/info/rfc5246>.
 
 Authors' Addresses
-
-
-
-
-
-
-
-Cam-Winget & Visoky       Expires July 6, 2020                  [Page 7]
-
-Internet-Draft                 IoT Ciphers                  January 2020
-
 
    Nancy Cam-Winget
    Cisco Systems
@@ -423,26 +445,4 @@ Internet-Draft                 IoT Ciphers                  January 2020
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Cam-Winget & Visoky       Expires July 6, 2020                  [Page 8]
+Cam-Winget & Visoky     Expires November 16, 2020               [Page 8]
