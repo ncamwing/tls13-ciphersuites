@@ -3,7 +3,7 @@
   <!ENTITY RFC2119 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml">
   <!ENTITY RFC4492 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4492.xml">
   <!ENTITY RFC5246 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5246.xml">
-  <!ENTITY RFC4634 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4634.xml">
+  <!ENTITY RFC6234 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6234.xml">
   <!ENTITY RFC8174 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.8174.xml">
 <!ENTITY RFC8446 SYSTEM "http://xml.resource.org/public/rfc/bibxml/reference.RFC.8446.xml">
   ]>
@@ -31,7 +31,7 @@
 <?rfc subcompact="no" ?>
 <!-- keep one blank line between list items -->
 <!-- end of popular PIs -->
-<rfc category="info" docName="draft-camwinget-tls-ts13-macciphersuites-05" ipr="trust200902">
+<rfc category="info" docName="draft-camwinget-tls-ts13-macciphersuites-06" ipr="trust200902">
   <front>
     <title abbrev="IoT Ciphers">TLS 1.3 Authentication and Integrity only Cipher Suites</title>
     <author fullname="Nancy Cam-Winget" initials="N" surname="Cam-Winget">
@@ -119,7 +119,7 @@
 	</section>
     
     <section title="Record Payload Protection for Integrity only Cipher Suites">
-		<t> Given that there is no encryption to be done at the record layer, the operations "Protect" and "Unprotect" take the place of "AEAD_Encrypt" and "AEAD_Decrypt", respectively. </t>
+		<t> Given that there is no encryption to be done at the record layer, the operations "Protect" and "Unprotect" take the place of "AEAD-Encrypt" and "AEAD-Decrypt", respectively. </t>
         <t> The record payload protection as defined in <xref target="RFC8446"/> can be retained when integrity only cipher suites are used.
             This section describes the mapping of record payload structures when integrity only cipher suites are employed.
             </t>
@@ -127,18 +127,32 @@
         <t> As integrity is provided with protection over the full record, the encrypted_record in the TLSCiphertext along with the additional_data input to protected_data (termed AEADEncrypted data in <xref target="RFC8446"/>) as defined in Section 5.2 <xref target="RFC8446"/> remains the same.
             The TLSCiphertext.length for the integrity cipher suites will be: </t>
         <t> <list style='hanging'>
-            <t hangText='TLS_SHA256_SHA256:'>   TLSPlaintext.length + 32</t>
-            <t hangText='TLS_SHA384_SHA384:'>   TLSPlaintext.length + 48</t>
+            <t hangText='TLS_SHA256_SHA256:'>   TLSCiphertext.length = TLSPlaintext.length + 1 (type field) + length_of_padding + 32 (HMAC) = TLSInnerPlaintext_length + 32 (HMAC) </t>
+            <t hangText='TLS_SHA384_SHA384:'>   TLSCiphertext.length = TLSPlaintext.length + 1 (type field) + length_of_padding + 48 (HMAC) = TLSInnerPlaintext_length + 48 (HMAC) </t>
         </list> </t>
-        <t> The resulting protected_record is the concatenation of the TLSPlaintext with the resulting HMAC. With this mapping, the record validation order as defined in Section 5.2 of  <xref target="RFC8446"/> remains the same.  That is, the HMAC operation is of the form: </t>
-        <t> TLS13-HMAC-Protected = HMAC-Protect(plaintext || HMAC(write_key, nonce || additional_data || plaintext) </t>
-        <t> The Protect and Unprotect operations provide the integrity protection using HMAC SHA-256 or SHA-384 as described in <xref target="RFC4634"/>.</t>
+		<t> Note that TLSInnerPlaintext_length is not defined as an explicit field in <xref target="RFC8446"/>, this refers to the length of the TLSInnterPlaintext structure </t> 
+        <t> The resulting protected_record is the concatenation of the TLSInnerPlaintext with the resulting HMAC. With this mapping, the record validation order as defined in Section 5.2 of  <xref target="RFC8446"/> remains the same.  That is, encrypted_record field of TLSCiphertext is set to: </t>
+        <t> TLSCiphertext = TLS13-HMAC-Protected = TLSInnerPlaintext || HMAC(write_key, nonce || additional_data || TLSInnerPlaintext) </t>
+		<t> Here "nonce" refers to the per-record nonce described in section 5.3 of <xref target="RFC8446"/>.</t>
+        <t> The Protect and Unprotect operations provide the integrity protection using HMAC SHA-256 or SHA-384 as described in <xref target="RFC6234"/>.</t>
         <t> Due to the lack of encryption of the plaintext, record padding is not needed, although it can be optionally included.</t>
         </section>
     
     <section title="Key Schedule when using Integrity only Cipher Suites">
-        <t> The key derivation process for Integrity only Cipher Suites remains the same as defined in <xref target="RFC8446"/>.  The only difference is that the keys used to protect the tunnel applies to the negotiated HMAC SHA-256 or HMAC SHA-384 ciphers. </t>
-        </section>
+        <t> The key derivation process for Integrity only Cipher Suites remains the same as defined in <xref target="RFC8446"/>.  The only difference is that the keys used to protect the tunnel applies to the negotiated HMAC SHA-256 or HMAC SHA-384 ciphers.  Note that the traffic key material (client_write_key, client_write_iv, server_write_key and server_write_iv) MUST be calculated as per RFC 8446, section 7.3.  The key lengths and IVs for these cipher suites are according to the hash lenghts.  In other words, the following key lenghts and IV lengths SHALL be: </t>
+        <texttable>
+      <ttcol align='left'>Cipher Suite</ttcol>
+      <ttcol align='left'>Key Length</ttcol>
+      <ttcol align='left'>IV Length</ttcol>
+      <c>TLS_SHA256_SHA256</c>
+      <c>32 Bytes</c>
+      <c>32 Bytes</c>
+      <c>TLS_SHA384_SHA384</c>
+      <c>48 Bytes</c>
+      <c>48 Bytes</c>
+</texttable>		
+		</section>
+
     <section title="Error Alerts">
         <t>The error alerts as defined by <xref target="RFC8446"/> remains the same, in particular: </t> 
 	<t> bad_record_mac:	This alert can also occur for a record whose message authentication code can not be validated.  Since these cipher suites do not involve record encryption this alert will only occur when the HMAC fails to verify. </t>
@@ -161,15 +175,15 @@
     </section>
    
     <section anchor="Acknowledgements" title="Acknowledgements">
-      <t>The authors would like to acknowledge the work done by Industrial Communications Standards Groups (such as ODVA) as the motivation for this document. We would also like to thank Steffen Fries for providing a fourth use case. In addition, we are grateful for the advice and feedback from Joe Salowey, Blake Anderson and David McGrew.</t>
+      <t>The authors would like to acknowledge the work done by Industrial Communications Standards Groups (such as ODVA) as the motivation for this document. We would also like to thank Steffen Fries for providing a fourth use case. In addition, we are grateful for the advice and feedback from Joe Salowey, Blake Anderson, David McGrew, Clement Zeller, and Peter Wu.</t>
     </section>
   </middle>
   <back>
     <references title="Normative References">
       &RFC2119;
+	  &RFC6234;
       &RFC8174;
       &RFC8446;
-      &RFC4634;
 
     </references>
     <references title="Informative Reference">
