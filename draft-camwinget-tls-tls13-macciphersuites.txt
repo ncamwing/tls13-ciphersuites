@@ -5,8 +5,8 @@
 TLS                                                        N. Cam-Winget
 Internet-Draft                                             Cisco Systems
 Intended status: Informational                                 J. Visoky
-Expires: November 16, 2020                                          ODVA
-                                                            May 15, 2020
+Expires: February 15, 2021                                          ODVA
+                                                         August 14, 2020
 
 
         TLS 1.3 Authentication and Integrity only Cipher Suites
@@ -16,9 +16,18 @@ Abstract
 
    There are use cases, specifically in Internet of Things (IoT) and
    constrained environments that do not require confidentiality, though
-   mutual authentication during tunnel establishment and message
-   integrity is still mandated.  This document defines the use of HMAC
-   only cipher suites for TLS 1.3.
+   message integrity for all communications and mutual authentication
+   during tunnel establishment are both still mandated.  Examples of
+   such use cases are given, although a threat model is necessary to
+   determine whether or not a given situation falls into this catergory
+   of use cases.  In order to serve these use cases, this document
+   defines the use of HMAC only cipher suites for TLS 1.3, which
+   provides mutual authentication and data authenticity, but not data
+   confidentiality.  The approach described in this document is not
+   endorsed by the IETF and does not have IETF consensus, but is
+   presented here to enable interoperable implementation of a reduced
+   security mechanism that provides authentication and message integrity
+   without supporting confidentiality.
 
 Status of This Memo
 
@@ -35,7 +44,19 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on November 16, 2020.
+   This Internet-Draft will expire on February 15, 2021.
+
+
+
+
+
+
+
+
+Cam-Winget & Visoky     Expires February 15, 2021               [Page 1]
+
+Internet-Draft                 IoT Ciphers                   August 2020
+
 
 Copyright Notice
 
@@ -49,15 +70,6 @@ Copyright Notice
    carefully, as they describe your rights and restrictions with respect
    to this document.  Code Components extracted from this document must
    include Simplified BSD License text as described in Section 4.e of
-
-
-
-
-Cam-Winget & Visoky     Expires November 16, 2020               [Page 1]
-
-Internet-Draft                 IoT Ciphers                      May 2020
-
-
    the Trust Legal Provisions and are provided without warranty as
    described in the Simplified BSD License.
 
@@ -66,17 +78,17 @@ Table of Contents
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
    2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   3
    3.  Applicability Statement . . . . . . . . . . . . . . . . . . .   3
-   4.  Cryptographic Negotiation Using Integrity only Cipher Suites    4
+   4.  Cryptographic Negotiation Using Integrity only Cipher Suites    5
    5.  Record Payload Protection for Integrity only Cipher Suites  .   5
    6.  Key Schedule when using Integrity only Cipher Suites  . . . .   6
-   7.  Error Alerts  . . . . . . . . . . . . . . . . . . . . . . . .   6
-   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   6
+   7.  Error Alerts  . . . . . . . . . . . . . . . . . . . . . . . .   7
+   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   7
    9.  Security and Privacy Considerations . . . . . . . . . . . . .   7
-   10. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   7
-   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .   7
-     11.1.  Normative References . . . . . . . . . . . . . . . . . .   7
-     11.2.  Informative Reference  . . . . . . . . . . . . . . . . .   8
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   8
+   10. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   8
+   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .   8
+     11.1.  Normative References . . . . . . . . . . . . . . . . . .   8
+     11.2.  Informative Reference  . . . . . . . . . . . . . . . . .   9
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   9
 
 1.  Introduction
 
@@ -85,68 +97,93 @@ Table of Contents
    transport is still very important.  For example, within the
    Industrial Automation space there could be TCP or UDP communications
    which command a robotic arm to move a certain distance at a certain
-   speed.  Without authenticity guarantees an attacker could modify the
+   speed.  Without authenticity guarantees, an attacker could modify the
    packets to change the movement of the robotic arm, potentially
    causing physical damage.  However, the motion control commands are
    not considered to be sensitive information and thus there is no
    requirement to provide confidentiality.  Another IoT example with no
    strong requirement for confidentiality is the reporting of weather
    information; however, message authenticity is required to ensure
-   integrity of the message..
-
-   Besides having a strong need for authenticity and a weak need for
-   confidentiality, many of these systems also have serious latency
-   requirements.  Furthermore, several IoT devices (industrial or
-   otherwise) have limited processing capability.  However, these IoT
-   systems still gain great benefit from leveraging TLS 1.3 for secure
-   communications.  Given the reduced need for confidentiality TLS 1.3
-   [RFC8446] cipher suites that maintain data integrity without
-   confidentiality are described in this document.
+   integrity of the message.
 
 
 
 
-
-
-
-Cam-Winget & Visoky     Expires November 16, 2020               [Page 2]
+Cam-Winget & Visoky     Expires February 15, 2021               [Page 2]
 
-Internet-Draft                 IoT Ciphers                      May 2020
+Internet-Draft                 IoT Ciphers                   August 2020
 
+
+   In some environments where the information is not confidential (such
+   as when there is not intellectual property associated with the
+   processes) or where the threat model does not indicate any outsider
+   attacks (such as in a closed system) it will not be necessary to
+   encrypt the messages.  But it is noted that this situation will not
+   apply equally to all similar use cases (for example, the same robotic
+   arm might be used in one case for a process that does not involve any
+   intellectual property, and in another case that does).  Therefore, it
+   is important that a user or system developer carefully examines both
+   the sensitivity of the data and the system threat model to determine
+   the need for encryption before deploying equipment
+
+   Besides having a strong need for authenticity and no need for
+   confidentiality, many of these systems also have a serious
+   requirement for low latency.  Furthermore, several classes of IoT
+   device (industrial or otherwise) have limited processing capability.
+   However, these IoT systems still gain great benefit from leveraging
+   TLS 1.3 for secure communications.  Given the reduced need for
+   confidentiality TLS 1.3 [RFC8446] cipher suites that maintain data
+   integrity without confidentiality are described in this document.
+   The approach described in this document is not endorsed by the IETF
+   and does not have IETF consensus, but is presented here to enable
+   interoperable implementation of a reduced security mechanism that
+   provides authentication and message integrity with supporting
+   confidentiality.
 
 2.  Terminology
 
-   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
-   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
-   document are to be interpreted as described in BCP 14 [RFC2119]
-   [RFC8174] when, and only when, they appear in all capitals, as shown
-   here.
+   Although this document is not an IETF Standards Track publication it
+   adopts the conventions for normatve language to provide clarity of
+   instructions to the implementer.  The key words "MUST", "MUST NOT",
+   "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT",
+   "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be
+   interpreted as described in BCP 14 [RFC2119] [RFC8174] when, and only
+   when, they appear in all capitals, as shown here.
 
 3.  Applicability Statement
 
-   The cipher suites defined in this document are intended for a small
-   limited set of applications where confidentiality requirements are
-   relaxed and the need to minimize the cryptographic algorithms are
-   prioritized.  This section describes some of those applicable use
-   cases.
+   The two cipher suites referenced in this document (TLS_SHA256_SHA256
+   and TLS_SHA384_SHA384) are intended for a small limited set of
+   applications where confidentiality requirements are relaxed and the
+   need to minimize the cryptographic algorithms are prioritized.  This
+   section describes some of those applicable use cases.
 
    Use cases in the industrial automation industry, while requiring data
-   integrity, relax the confidential communications requirement.
-   Mainly, information communicated to unmanned machines to execute
-   repetitive tasks do not convey private information.  For example,
-   there could be a system with a robotic arm that is doing high speed
-   pick-and-place of materials.  The position synchronization data and
-   motion commands are required to have very low latency, as the process
-   needs to be done at high speed on a compute and memory constrained
-   device.  However, information such as the position, speed,
-   acceleration of the robotic arm or other material in the system is
-   not confidential.  That is, while an attacker can determine the
-   behavioral aspects and task of the device; no intellectual property
-   concerns or data privacy concerns exist for these communications.
-   However, data integrity is required as being able to modify this data
-   would be a threat that an attacker might seek to exploit with serious
-   consequences; the attacker could modify the motion information in
-   order to cause physical damage to the equipment.
+   integrity, often times lack the confidential communications
+   requirement.  Mainly, information communicated to unmanned machines
+   to execute repetitive tasks does not convey private information.  For
+
+
+
+Cam-Winget & Visoky     Expires February 15, 2021               [Page 3]
+
+Internet-Draft                 IoT Ciphers                   August 2020
+
+
+   example, there could be a system with a robotic arm that paints the
+   body of a car.  This equipment is used within a car manufacturing
+   plant, and is just one piece of equipment in a multi-step
+   manufacturing process.  The movements of this robotic arm are likely
+   not a trade secret or sensitive intellectual property, although some
+   portions of the manufacturing of the car might very well contain
+   sesitivie intellectual property.  Even the mixture for the paint
+   itself might be confidential, but the mixing is done by a completely
+   different piece of equipment and therefore communciation to/from that
+   equipement can be encrypted without requiring the communication to/
+   from the robotic arm to be encrypted.  Modern manufacturing often has
+   segmented equipment with different levelsof risk on intellectual
+   property, although nearly every communciation interaction has strong
+   data authenticity requirements.
 
    Another use case which is closely related is that of fine grained
    time updates.  Motion systems often rely on time synchronization to
@@ -161,18 +198,10 @@ Internet-Draft                 IoT Ciphers                      May 2020
    synchronization updates are very fine-grained, it is again important
    for latency to be very low.
 
-
-
-
-
-Cam-Winget & Visoky     Expires November 16, 2020               [Page 3]
-
-Internet-Draft                 IoT Ciphers                      May 2020
-
-
-   A third use case deals with Alarming data.  Industrial control
-   sensing equipment can be configured to send alarm information when it
-   meets certain conditions.  Often times this data is used to detect
+   A third use case deals with data related to alarms.  Industrial
+   control sensing equipment can be configured to send alarm information
+   when it meets certain conditions, for example, temperature goes above
+   or below a given threshhold.  Often times this data is used to detect
    certain out-of-tolerance conditions, allowing an operator or
    automated system to take corrective action.  Once again, in many
    systems the reading of this data doesn't grant the attacker
@@ -182,9 +211,20 @@ Internet-Draft                 IoT Ciphers                      May 2020
    alarms falsely or to cover up evidence of an attack that might allow
    for detection of their malicious activity.  Furthermore, sensors are
    often low powered devices that might struggle to process encrypted
-   and authenticated data.  Sending data that is just authenticated
-   significantly eases the burden placed on these devices, yet still
-   allows the data to be protected against any tampering threats.
+   and authenticated data.  These sensors might be very cost sensitive
+   such that there is not enough processing power for data encryption.
+   Sending data that is just authenticated significantly eases the
+   burden placed on these devices, yet still allows the data to be
+   protected against any tampering threats.  A user can always chose to
+   pay more for a sensor with encryption capability, but for some data
+   authenticity will be sufficient.
+
+
+
+Cam-Winget & Visoky     Expires February 15, 2021               [Page 4]
+
+Internet-Draft                 IoT Ciphers                   August 2020
+
 
    A fourth use case considers the protection of commands in the railway
    industry.  In railway control systems, no confidentiality
@@ -217,15 +257,6 @@ Internet-Draft                 IoT Ciphers                      May 2020
 
    These cipher suites allow the use of SHA-256 or SHA-384 as the HMACs
    for data integrity protection as well as its use for HKDF.  The
-
-
-
-
-Cam-Winget & Visoky     Expires November 16, 2020               [Page 4]
-
-Internet-Draft                 IoT Ciphers                      May 2020
-
-
    authentication mechanisms remain unchanged with the intent to only
    update the cipher suites to relax the need for confidentiality.
 
@@ -235,19 +266,26 @@ Internet-Draft                 IoT Ciphers                      May 2020
 
 5.  Record Payload Protection for Integrity only Cipher Suites
 
-   Given that there is no encryption to be done at the record layer, the
-   operations "Protect" and "Unprotect" take the place of "AEAD-Encrypt"
-   and "AEAD-Decrypt", respectively.
-
    The record payload protection as defined in [RFC8446] can be retained
    when integrity only cipher suites are used.  This section describes
    the mapping of record payload structures when integrity only cipher
    suites are employed.
 
+   Given that there is no encryption to be done at the record layer, the
+   operations "Protect" and "Unprotect" take the place of "AEAD-Encrypt"
+   and "AEAD-Decrypt", respectively, as referenced in [RFC8446]
+
+
+
+Cam-Winget & Visoky     Expires February 15, 2021               [Page 5]
+
+Internet-Draft                 IoT Ciphers                   August 2020
+
+
    As integrity is provided with protection over the full record, the
    encrypted_record in the TLSCiphertext along with the additional_data
    input to protected_data (termed AEADEncrypted data in [RFC8446]) as
-   defined in Section 5.2 [RFC8446] remains the same.  The
+   defined in Section 5.2 of [RFC8446] remains the same.  The
    TLSCiphertext.length for the integrity cipher suites will be:
 
    TLS_SHA256_SHA256:  TLSCiphertext.length = TLSPlaintext.length + 1
@@ -274,14 +312,6 @@ Internet-Draft                 IoT Ciphers                      May 2020
    Here "nonce" refers to the per-record nonce described in section 5.3
    of [RFC8446].
 
-
-
-
-Cam-Winget & Visoky     Expires November 16, 2020               [Page 5]
-
-Internet-Draft                 IoT Ciphers                      May 2020
-
-
    The Protect and Unprotect operations provide the integrity protection
    using HMAC SHA-256 or SHA-384 as described in [RFC6234].
 
@@ -292,13 +322,21 @@ Internet-Draft                 IoT Ciphers                      May 2020
 
    The key derivation process for Integrity only Cipher Suites remains
    the same as defined in [RFC8446].  The only difference is that the
-   keys used to protect the tunnel applies to the negotiated HMAC
-   SHA-256 or HMAC SHA-384 ciphers.  Note that the traffic key material
+   keys used to protect the tunnel apply to the negotiated HMAC SHA-256
+   or HMAC SHA-384 ciphers.  Note that the traffic key material
    (client_write_key, client_write_iv, server_write_key and
    server_write_iv) MUST be calculated as per RFC 8446, section 7.3.
    The key lengths and IVs for these cipher suites are according to the
    hash lenghts.  In other words, the following key lenghts and IV
    lengths SHALL be:
+
+
+
+
+Cam-Winget & Visoky     Expires February 15, 2021               [Page 6]
+
+Internet-Draft                 IoT Ciphers                   August 2020
+
 
               +-------------------+------------+-----------+
               | Cipher Suite      | Key Length | IV Length |
@@ -324,22 +362,15 @@ Internet-Draft                 IoT Ciphers                      May 2020
 8.  IANA Considerations
 
    IANA has granted registration the following specifically for this
-   document:
+   document within the TLS Cipher Suites Registry:
 
    TLS_SHA256_SHA256 {0xC0, 0xB4} cipher suite and TLS_SHA384_SHA384
    {0xC0, 0xB5} cipher suite.
 
-
-
-
-
-Cam-Winget & Visoky     Expires November 16, 2020               [Page 6]
-
-Internet-Draft                 IoT Ciphers                      May 2020
-
-
    Note that both of these cipher suites are registered with the DTLS-OK
    column set to Y and the Recommneded column set to N
+
+   No further IANA action is requested by this document.
 
 9.  Security and Privacy Considerations
 
@@ -355,6 +386,14 @@ Internet-Draft                 IoT Ciphers                      May 2020
    With the lack of data encryption specified in this draft, no
    confidentiality or privacy is provided for the data transported via
    the TLS session.  To highlight the loss of privacy, the information
+
+
+
+Cam-Winget & Visoky     Expires February 15, 2021               [Page 7]
+
+Internet-Draft                 IoT Ciphers                   August 2020
+
+
    carried in the TLS handshake, which includes both the Server and
    Client certificates, while integrity protected, will be sent
    unencrypted.  Similarly, other TLS extensions that may be carried in
@@ -363,11 +402,11 @@ Internet-Draft                 IoT Ciphers                      May 2020
    this lack of confidentiality, PSK data MUST NOT be sent in the
    handshake while using these cipher suites.
 
-   Given the lack of confidentiality, it is of the utmost importance
-   that these cipher suites never be enabled by default.  As these
-   cipher suites are meant to serve the IoT market, it is important that
-   any IoT endpoint that uses them be explicitly configured with a
-   policy of non-confidential communications.
+   Given the lack of confidentiality, these cipher suites MUST NOT be
+   enabled by default.  As these cipher suites are meant to serve the
+   IoT market, it is important that any IoT endpoint that uses them be
+   explicitly configured with a policy of non-confidential
+   communications.
 
 10.  Acknowledgements
 
@@ -387,13 +426,6 @@ Internet-Draft                 IoT Ciphers                      May 2020
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/info/rfc2119>.
 
-
-
-Cam-Winget & Visoky     Expires November 16, 2020               [Page 7]
-
-Internet-Draft                 IoT Ciphers                      May 2020
-
-
    [RFC6234]  Eastlake 3rd, D. and T. Hansen, "US Secure Hash Algorithms
               (SHA and SHA-based HMAC and HKDF)", RFC 6234,
               DOI 10.17487/RFC6234, May 2011,
@@ -406,6 +438,17 @@ Internet-Draft                 IoT Ciphers                      May 2020
    [RFC8446]  Rescorla, E., "The Transport Layer Security (TLS) Protocol
               Version 1.3", RFC 8446, DOI 10.17487/RFC8446, August 2018,
               <https://www.rfc-editor.org/info/rfc8446>.
+
+
+
+
+
+
+
+Cam-Winget & Visoky     Expires February 15, 2021               [Page 8]
+
+Internet-Draft                 IoT Ciphers                   August 2020
+
 
 11.2.  Informative Reference
 
@@ -445,4 +488,17 @@ Authors' Addresses
 
 
 
-Cam-Winget & Visoky     Expires November 16, 2020               [Page 8]
+
+
+
+
+
+
+
+
+
+
+
+
+
+Cam-Winget & Visoky     Expires February 15, 2021               [Page 9]
