@@ -5,12 +5,12 @@
 TLS                                                        N. Cam-Winget
 Internet-Draft                                             Cisco Systems
 Intended status: Informational                                 J. Visoky
-Expires: March 1, 2021                                              ODVA
-                                                         August 28, 2020
+Expires: April 23, 2021                                             ODVA
+                                                        October 20, 2020
 
 
         TLS 1.3 Authentication and Integrity only Cipher Suites
-              draft-camwinget-tls-ts13-macciphersuites-07
+              draft-camwinget-tls-ts13-macciphersuites-08
 
 Abstract
 
@@ -44,7 +44,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on March 1, 2021.
+   This Internet-Draft will expire on April 23, 2021.
 
 
 
@@ -53,9 +53,9 @@ Status of This Memo
 
 
 
-Cam-Winget & Visoky       Expires March 1, 2021                 [Page 1]
+Cam-Winget & Visoky      Expires April 23, 2021                 [Page 1]
 
-Internet-Draft                 IoT Ciphers                   August 2020
+Internet-Draft                 IoT Ciphers                  October 2020
 
 
 Copyright Notice
@@ -80,10 +80,10 @@ Table of Contents
    3.  Applicability Statement . . . . . . . . . . . . . . . . . . .   3
    4.  Cryptographic Negotiation Using Integrity only Cipher Suites    5
    5.  Record Payload Protection for Integrity only Cipher Suites  .   5
-   6.  Key Schedule when using Integrity only Cipher Suites  . . . .   6
+   6.  Key Schedule when using Integrity only Cipher Suites  . . . .   7
    7.  Error Alerts  . . . . . . . . . . . . . . . . . . . . . . . .   7
    8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   7
-   9.  Security and Privacy Considerations . . . . . . . . . . . . .   7
+   9.  Security and Privacy Considerations . . . . . . . . . . . . .   8
    10. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   8
    11. References  . . . . . . . . . . . . . . . . . . . . . . . . .   8
      11.1.  Normative References . . . . . . . . . . . . . . . . . .   8
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Cam-Winget & Visoky       Expires March 1, 2021                 [Page 2]
+Cam-Winget & Visoky      Expires April 23, 2021                 [Page 2]
 
-Internet-Draft                 IoT Ciphers                   August 2020
+Internet-Draft                 IoT Ciphers                  October 2020
 
 
    There is no requirement to encrypt messages in environments where the
@@ -165,9 +165,9 @@ Internet-Draft                 IoT Ciphers                   August 2020
 
 
 
-Cam-Winget & Visoky       Expires March 1, 2021                 [Page 3]
+Cam-Winget & Visoky      Expires April 23, 2021                 [Page 3]
 
-Internet-Draft                 IoT Ciphers                   August 2020
+Internet-Draft                 IoT Ciphers                  October 2020
 
 
    be a system with a robotic arm that paints the body of a car.  This
@@ -221,9 +221,9 @@ Internet-Draft                 IoT Ciphers                   August 2020
 
 
 
-Cam-Winget & Visoky       Expires March 1, 2021                 [Page 4]
+Cam-Winget & Visoky      Expires April 23, 2021                 [Page 4]
 
-Internet-Draft                 IoT Ciphers                   August 2020
+Internet-Draft                 IoT Ciphers                  October 2020
 
 
    A fourth use case considers the protection of commands in the railway
@@ -277,9 +277,9 @@ Internet-Draft                 IoT Ciphers                   August 2020
 
 
 
-Cam-Winget & Visoky       Expires March 1, 2021                 [Page 5]
+Cam-Winget & Visoky      Expires April 23, 2021                 [Page 5]
 
-Internet-Draft                 IoT Ciphers                   August 2020
+Internet-Draft                 IoT Ciphers                  October 2020
 
 
    As integrity is provided with protection over the full record, the
@@ -312,11 +312,31 @@ Internet-Draft                 IoT Ciphers                   August 2020
    Here "nonce" refers to the per-record nonce described in section 5.3
    of [RFC8446].
 
+   For DTLS 1.3, the DTLSCiphertext is set to:
+
+   DTLSCiphertext = TLS13-HMAC-Protected = DTLSInnerPlaintext ||
+   HMAC(write_key, nonce || additional_data || DTLSInnerPlaintext)
+
+   The DTLS "nonce" refers to the per-record nonce described in section
+   4.2.2 of [DTLS13].
+
    The Protect and Unprotect operations provide the integrity protection
    using HMAC SHA-256 or SHA-384 as described in [RFC6234].
 
    Due to the lack of encryption of the plaintext, record padding is not
    needed, although it can be optionally included.
+
+
+
+
+
+
+
+
+Cam-Winget & Visoky      Expires April 23, 2021                 [Page 6]
+
+Internet-Draft                 IoT Ciphers                  October 2020
+
 
 6.  Key Schedule when using Integrity only Cipher Suites
 
@@ -329,14 +349,6 @@ Internet-Draft                 IoT Ciphers                   August 2020
    The key lengths and IVs for these cipher suites are according to the
    hash lenghts.  In other words, the following key lenghts and IV
    lengths SHALL be:
-
-
-
-
-Cam-Winget & Visoky       Expires March 1, 2021                 [Page 6]
-
-Internet-Draft                 IoT Ciphers                   August 2020
-
 
               +-------------------+------------+-----------+
               | Cipher Suite      | Key Length | IV Length |
@@ -368,9 +380,19 @@ Internet-Draft                 IoT Ciphers                   August 2020
    {0xC0, 0xB5} cipher suite.
 
    Note that both of these cipher suites are registered with the DTLS-OK
-   column set to Y and the Recommneded column set to N
+   column set to Y and the Recommended column set to N
 
    No further IANA action is requested by this document.
+
+
+
+
+
+
+Cam-Winget & Visoky      Expires April 23, 2021                 [Page 7]
+
+Internet-Draft                 IoT Ciphers                  October 2020
+
 
 9.  Security and Privacy Considerations
 
@@ -386,14 +408,6 @@ Internet-Draft                 IoT Ciphers                   August 2020
    With the lack of data encryption specified in this draft, no
    confidentiality or privacy is provided for the data transported via
    the TLS session.  To highlight the loss of privacy, the information
-
-
-
-Cam-Winget & Visoky       Expires March 1, 2021                 [Page 7]
-
-Internet-Draft                 IoT Ciphers                   August 2020
-
-
    carried in the TLS handshake, which includes both the Server and
    Client certificates, while integrity protected, will be sent
    unencrypted.  Similarly, other TLS extensions that may be carried in
@@ -421,10 +435,20 @@ Internet-Draft                 IoT Ciphers                   August 2020
 
 11.1.  Normative References
 
+   [DTLS13]   IETF Internet Drafts editor,
+              "https://tools.ietf.org/id/draft-ietf-tls-dtls13-38.txt".
+
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/info/rfc2119>.
+
+
+
+Cam-Winget & Visoky      Expires April 23, 2021                 [Page 8]
+
+Internet-Draft                 IoT Ciphers                  October 2020
+
 
    [RFC6234]  Eastlake 3rd, D. and T. Hansen, "US Secure Hash Algorithms
               (SHA and SHA-based HMAC and HKDF)", RFC 6234,
@@ -438,17 +462,6 @@ Internet-Draft                 IoT Ciphers                   August 2020
    [RFC8446]  Rescorla, E., "The Transport Layer Security (TLS) Protocol
               Version 1.3", RFC 8446, DOI 10.17487/RFC8446, August 2018,
               <https://www.rfc-editor.org/info/rfc8446>.
-
-
-
-
-
-
-
-Cam-Winget & Visoky       Expires March 1, 2021                 [Page 8]
-
-Internet-Draft                 IoT Ciphers                   August 2020
-
 
 11.2.  Informative Reference
 
@@ -488,17 +501,4 @@ Authors' Addresses
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-Cam-Winget & Visoky       Expires March 1, 2021                 [Page 9]
+Cam-Winget & Visoky      Expires April 23, 2021                 [Page 9]
