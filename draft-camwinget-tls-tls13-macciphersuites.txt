@@ -5,8 +5,8 @@
 TLS                                                        N. Cam-Winget
 Internet-Draft                                             Cisco Systems
 Intended status: Informational                                 J. Visoky
-Expires: April 24, 2021                                             ODVA
-                                                        October 21, 2020
+Expires: September 27, 2021                                         ODVA
+                                                          March 26, 2021
 
 
         TLS 1.3 Authentication and Integrity only Cipher Suites
@@ -16,18 +16,19 @@ Abstract
 
    There are use cases, specifically in Internet of Things (IoT) and
    constrained environments that do not require confidentiality, though
-   message integrity for all communications and mutual authentication
-   during tunnel establishment are both still mandated.  Examples of
-   such use cases are given, although a threat model is necessary to
-   determine whether or not a given situation falls into this catergory
-   of use cases.  In order to serve these use cases, this document
-   defines the use of HMAC only cipher suites for TLS 1.3, which
-   provides mutual authentication and data authenticity, but not data
-   confidentiality.  The approach described in this document is not
-   endorsed by the IETF and does not have IETF consensus, but is
-   presented here to enable interoperable implementation of a reduced
-   security mechanism that provides authentication and message integrity
-   without supporting confidentiality.
+   message integrity for all communications and at least server, if not
+   mutual authentication during tunnel establishment are both still
+   mandated.  Examples of such use cases are given, although a threat
+   model is necessary to determine whether or not a given situation
+   falls into this catergory of use cases.  In order to serve these use
+   cases, this document defines the use of HMAC only cipher suites for
+   TLS 1.3, which provides server and optionally mutual authentication
+   and data authenticity, but not data confidentiality.  The approach
+   described in this document is not endorsed by the IETF and does not
+   have IETF consensus, but is presented here to enable interoperable
+   implementation of a reduced security mechanism that provides
+   authentication and message integrity without supporting
+   confidentiality.
 
 Status of This Memo
 
@@ -44,7 +45,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on April 24, 2021.
+   This Internet-Draft will expire on September 27, 2021.
 
 
 
@@ -52,15 +53,14 @@ Status of This Memo
 
 
 
-
-Cam-Winget & Visoky      Expires April 24, 2021                 [Page 1]
+Cam-Winget & Visoky    Expires September 27, 2021               [Page 1]
 
-Internet-Draft                 IoT Ciphers                  October 2020
+Internet-Draft                 IoT Ciphers                    March 2021
 
 
 Copyright Notice
 
-   Copyright (c) 2020 IETF Trust and the persons identified as the
+   Copyright (c) 2021 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -78,17 +78,17 @@ Table of Contents
    1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   2
    2.  Terminology . . . . . . . . . . . . . . . . . . . . . . . . .   3
    3.  Applicability Statement . . . . . . . . . . . . . . . . . . .   3
-   4.  Cryptographic Negotiation Using Integrity only Cipher Suites    5
-   5.  Record Payload Protection for Integrity only Cipher Suites  .   5
+   4.  Cryptographic Negotiation Using Integrity only Cipher Suites    6
+   5.  Record Payload Protection for Integrity only Cipher Suites  .   6
    6.  Key Schedule when using Integrity only Cipher Suites  . . . .   7
-   7.  Error Alerts  . . . . . . . . . . . . . . . . . . . . . . . .   7
-   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   7
+   7.  Error Alerts  . . . . . . . . . . . . . . . . . . . . . . . .   8
+   8.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   8
    9.  Security and Privacy Considerations . . . . . . . . . . . . .   8
-   10. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   8
-   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .   8
-     11.1.  Normative References . . . . . . . . . . . . . . . . . .   8
-     11.2.  Informative Reference  . . . . . . . . . . . . . . . . .   9
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   9
+   10. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   9
+   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .   9
+     11.1.  Normative References . . . . . . . . . . . . . . . . . .   9
+     11.2.  Informative Reference  . . . . . . . . . . . . . . . . .  10
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  10
 
 1.  Introduction
 
@@ -109,9 +109,9 @@ Table of Contents
 
 
 
-Cam-Winget & Visoky      Expires April 24, 2021                 [Page 2]
+Cam-Winget & Visoky    Expires September 27, 2021               [Page 2]
 
-Internet-Draft                 IoT Ciphers                  October 2020
+Internet-Draft                 IoT Ciphers                    March 2021
 
 
    There is no requirement to encrypt messages in environments where the
@@ -134,11 +134,15 @@ Internet-Draft                 IoT Ciphers                  October 2020
    TLS 1.3 for secure communications.  Given the reduced need for
    confidentiality TLS 1.3 [RFC8446] cipher suites that maintain data
    integrity without confidentiality are described in this document.
-   The approach described in this document is not endorsed by the IETF
-   and does not have IETF consensus, but is presented here to enable
-   interoperable implementation of a reduced security mechanism that
-   provides authentication and message integrity with supporting
-   confidentiality.
+   These ciphersuites are not meant for general use as they do not meet
+   the confidentiality and privacy goals of TLS.  They should only be
+   used in cases where confidentiality and privacy is not a concern and
+   there are constraints on using ciphersuites that provide the full set
+   of security properties.  The approach described in this document is
+   not endorsed by the IETF and does not have IETF consensus, but is
+   presented here to enable interoperable implementation of a reduced
+   security mechanism that provides authentication and message integrity
+   with supporting confidentiality.
 
 2.  Terminology
 
@@ -158,18 +162,18 @@ Internet-Draft                 IoT Ciphers                  October 2020
    cryptographic algorithms are prioritized.  This section describes
    some of those applicable use cases.
 
+
+
+
+Cam-Winget & Visoky    Expires September 27, 2021               [Page 3]
+
+Internet-Draft                 IoT Ciphers                    March 2021
+
+
    Use cases in the industrial automation industry, while requiring data
    integrity, often do not require confidential communications.  Mainly,
    information communicated to unmanned machines to execute repetitive
    tasks does not convey private information.  For example, there could
-
-
-
-Cam-Winget & Visoky      Expires April 24, 2021                 [Page 3]
-
-Internet-Draft                 IoT Ciphers                  October 2020
-
-
    be a system with a robotic arm that paints the body of a car.  This
    equipment is used within a car manufacturing plant, and is just one
    piece of equipment in a multi-step manufacturing process.  The
@@ -181,7 +185,7 @@ Internet-Draft                 IoT Ciphers                  October 2020
    piece of equipment and therefore communciation to/from that equipment
    can be encrypted without requiring the communication to/from the
    robotic arm to be encrypted.  Modern manufacturing often has
-   segmented equipment with different levelsof risk on intellectual
+   segmented equipment with different levels of risk on intellectual
    property, although nearly every communciation interaction has strong
    data authenticity requirements.
 
@@ -214,17 +218,18 @@ Internet-Draft                 IoT Ciphers                  October 2020
    and authenticated data.  These sensors might be very cost sensitive
    such that there is not enough processing power for data encryption.
    Sending data that is just authenticated significantly eases the
+
+
+
+Cam-Winget & Visoky    Expires September 27, 2021               [Page 4]
+
+Internet-Draft                 IoT Ciphers                    March 2021
+
+
    burden placed on these devices, yet still allows the data to be
    protected against any tampering threats.  A user can always chose to
    pay more for a sensor with encryption capability, but for some data
    authenticity will be sufficient.
-
-
-
-Cam-Winget & Visoky      Expires April 24, 2021                 [Page 4]
-
-Internet-Draft                 IoT Ciphers                  October 2020
-
 
    A fourth use case considers the protection of commands in the railway
    industry.  In railway control systems, no confidentiality
@@ -241,10 +246,49 @@ Internet-Draft                 IoT Ciphers                  October 2020
    safety related commands to a third party, which is responsible for
    the analysis after an accident.
 
+   The fifth use case deals with data related to civil aviation
+   airplanes and ground communication.  Pilots can send and receive
+   messages to/from ground such as airplane route of flight update,
+   weather information, controller and pilot communication, and airline
+   back office communication.  Similarly, the Air Traffic Control
+   Centers (ATC) use air to ground communication to receive the
+   surveillance data that relies on (is dependent on) downlink reports
+   from an airplane's avionics that occur automatically in accordance
+   with contracts established between the ATC ground system and the
+   airplane's avionics.  Reports can be sent whenever specific events
+   occur, or specific time intervals are reached.  In many systems the
+   reading of this data doesn't grant the attacker information that can
+   be exploited, it is generally just information regarding the airplane
+   states, controller pilot communication, meteorological information
+   etc.  At the same time, being able to modify this data would allow an
+   attacker to either put aircraft in the wrong flight trajectory or to
+   provide false information to ground that might delay flight and
+   damage properties or harm life.  Sending data that is just
+   authenticated allows the data to be protected against any tampering
+   threats.  Data authenticity is sufficient for the air traffic,
+   weather and surveillance information exchange between airplanes and
+   the ground systems.
+
    The above use cases describe the relaxed requirements to provide
    confidentiality, and as these devices come with a small runtime
    memory footprint and reduced processing power, the need to minimize
-   the number of cryptographic algorithms used is prioritized.
+   the number of cryptographic algorithms used is prioritized.  Despite
+   this, it is noted that memory, performance, and processing power
+
+
+
+Cam-Winget & Visoky    Expires September 27, 2021               [Page 5]
+
+Internet-Draft                 IoT Ciphers                    March 2021
+
+
+   implications of any given algorithm or set of algorithms is highly
+   dependent on hardware and software achitecture.  Therefore, although
+   these cipher suites may provide performance benefits, they will not
+   necessarily provide these benefits in all cases on all platforms.
+   Furthermore, in some use cases third party inspection of data is
+   specifically needed, which is also supported through the lack of
+   confidentiality mechanisms.
 
 4.  Cryptographic Negotiation Using Integrity only Cipher Suites
 
@@ -267,20 +311,15 @@ Internet-Draft                 IoT Ciphers                  October 2020
 5.  Record Payload Protection for Integrity only Cipher Suites
 
    The record payload protection as defined in [RFC8446] can be retained
-   when integrity only cipher suites are used.  This section describes
-   the mapping of record payload structures when integrity only cipher
-   suites are employed.
+   when integrity only cipher suites are used.  Note that due to the
+   purposeful use of hash algorithms, instead of AEAD algorithms, the
+   confidentiality protection of the record payload cannot be provided.
+   This section describes the mapping of record payload structures when
+   integrity only cipher suites are employed.
 
    Given that there is no encryption to be done at the record layer, the
    operations "Protect" and "Unprotect" take the place of "AEAD-Encrypt"
    and "AEAD-Decrypt", respectively, as referenced in [RFC8446]
-
-
-
-Cam-Winget & Visoky      Expires April 24, 2021                 [Page 5]
-
-Internet-Draft                 IoT Ciphers                  October 2020
-
 
    As integrity is provided with protection over the full record, the
    encrypted_record in the TLSCiphertext along with the additional_data
@@ -291,6 +330,13 @@ Internet-Draft                 IoT Ciphers                  October 2020
    TLS_SHA256_SHA256:  TLSCiphertext.length = TLSPlaintext.length + 1
       (type field) + length_of_padding + 32 (HMAC) =
       TLSInnerPlaintext_length + 32 (HMAC)
+
+
+
+Cam-Winget & Visoky    Expires September 27, 2021               [Page 6]
+
+Internet-Draft                 IoT Ciphers                    March 2021
+
 
    TLS_SHA384_SHA384:  TLSCiphertext.length = TLSPlaintext.length + 1
       (type field) + length_of_padding + 48 (HMAC) =
@@ -321,22 +367,10 @@ Internet-Draft                 IoT Ciphers                  October 2020
    4.2.2 of [DTLS13].
 
    The Protect and Unprotect operations provide the integrity protection
-   using HMAC SHA-256 or SHA-384 as described in [RFC6234].
+   using HMAC SHA-256 or HMAC SHA-384 as described in [RFC6234].
 
    Due to the lack of encryption of the plaintext, record padding is not
    needed, although it can be optionally included.
-
-
-
-
-
-
-
-
-Cam-Winget & Visoky      Expires April 24, 2021                 [Page 6]
-
-Internet-Draft                 IoT Ciphers                  October 2020
-
 
 6.  Key Schedule when using Integrity only Cipher Suites
 
@@ -349,6 +383,16 @@ Internet-Draft                 IoT Ciphers                  October 2020
    The key lengths and IVs for these cipher suites are according to the
    hash lenghts.  In other words, the following key lenghts and IV
    lengths SHALL be:
+
+
+
+
+
+
+Cam-Winget & Visoky    Expires September 27, 2021               [Page 7]
+
+Internet-Draft                 IoT Ciphers                    March 2021
+
 
               +-------------------+------------+-----------+
               | Cipher Suite      | Key Length | IV Length |
@@ -384,16 +428,6 @@ Internet-Draft                 IoT Ciphers                  October 2020
 
    No further IANA action is requested by this document.
 
-
-
-
-
-
-Cam-Winget & Visoky      Expires April 24, 2021                 [Page 7]
-
-Internet-Draft                 IoT Ciphers                  October 2020
-
-
 9.  Security and Privacy Considerations
 
    In general, with the exception of confidentiality and privacy, the
@@ -407,13 +441,23 @@ Internet-Draft                 IoT Ciphers                  October 2020
 
    With the lack of data encryption specified in this draft, no
    confidentiality or privacy is provided for the data transported via
-   the TLS session.  To highlight the loss of privacy, the information
-   carried in the TLS handshake, which includes both the Server and
-   Client certificates, while integrity protected, will be sent
-   unencrypted.  Similarly, other TLS extensions that may be carried in
-   the Server's EncryptedExtensions message will only be integrity
-   protected without provisions for confidentiality.  Furthermore, with
-   this lack of confidentiality, PSK data MUST NOT be sent in the
+   the TLS session.  That is, the record layer is NOT encrypted when
+
+
+
+Cam-Winget & Visoky    Expires September 27, 2021               [Page 8]
+
+Internet-Draft                 IoT Ciphers                    March 2021
+
+
+   using these cipehr suite, and the handshake also is NOT encrypted.
+   To highlight the loss of privacy, the information carried in the TLS
+   handshake, which includes both the Server and Client certificates,
+   while integrity protected, will be sent unencrypted.  Similarly,
+   other TLS extensions that may be carried in the Server's
+   EncryptedExtensions message will only be integrity protected without
+   provisions for confidentiality.  Furthermore, with this lack of
+   confidentiality, any private PSK data MUST NOT be sent in the
    handshake while using these cipher suites.
 
    Given the lack of confidentiality, these cipher suites MUST NOT be
@@ -443,13 +487,6 @@ Internet-Draft                 IoT Ciphers                  October 2020
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/info/rfc2119>.
 
-
-
-Cam-Winget & Visoky      Expires April 24, 2021                 [Page 8]
-
-Internet-Draft                 IoT Ciphers                  October 2020
-
-
    [RFC6234]  Eastlake 3rd, D. and T. Hansen, "US Secure Hash Algorithms
               (SHA and SHA-based HMAC and HKDF)", RFC 6234,
               DOI 10.17487/RFC6234, May 2011,
@@ -458,6 +495,16 @@ Internet-Draft                 IoT Ciphers                  October 2020
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/info/rfc8174>.
+
+
+
+
+
+
+Cam-Winget & Visoky    Expires September 27, 2021               [Page 9]
+
+Internet-Draft                 IoT Ciphers                    March 2021
+
 
    [RFC8446]  Rescorla, E., "The Transport Layer Security (TLS) Protocol
               Version 1.3", RFC 8446, DOI 10.17487/RFC8446, August 2018,
@@ -501,4 +548,13 @@ Authors' Addresses
 
 
 
-Cam-Winget & Visoky      Expires April 24, 2021                 [Page 9]
+
+
+
+
+
+
+
+
+
+Cam-Winget & Visoky    Expires September 27, 2021              [Page 10]
