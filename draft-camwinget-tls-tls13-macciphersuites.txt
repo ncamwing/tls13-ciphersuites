@@ -5,8 +5,8 @@
 TLS                                                        N. Cam-Winget
 Internet-Draft                                             Cisco Systems
 Intended status: Informational                                 J. Visoky
-Expires: December 14, 2021                                          ODVA
-                                                           June 12, 2021
+Expires: December 18, 2021                                          ODVA
+                                                           June 16, 2021
 
 
         TLS 1.3 Authentication and Integrity only Cipher Suites
@@ -47,13 +47,13 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on December 14, 2021.
+   This Internet-Draft will expire on December 18, 2021.
 
 
 
 
 
-Cam-Winget & Visoky     Expires December 14, 2021               [Page 1]
+Cam-Winget & Visoky     Expires December 18, 2021               [Page 1]
 
 Internet-Draft              MAC-only Ciphers                   June 2021
 
@@ -87,8 +87,8 @@ Table of Contents
    10. Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .  10
    11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  10
      11.1.  Normative References . . . . . . . . . . . . . . . . . .  10
-     11.2.  Informative Reference  . . . . . . . . . . . . . . . . .  10
-   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  10
+     11.2.  Informative Reference  . . . . . . . . . . . . . . . . .  11
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .  11
 
 1.  Introduction
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Cam-Winget & Visoky     Expires December 14, 2021               [Page 2]
+Cam-Winget & Visoky     Expires December 18, 2021               [Page 2]
 
 Internet-Draft              MAC-only Ciphers                   June 2021
 
@@ -165,7 +165,7 @@ Internet-Draft              MAC-only Ciphers                   June 2021
 
 
 
-Cam-Winget & Visoky     Expires December 14, 2021               [Page 3]
+Cam-Winget & Visoky     Expires December 18, 2021               [Page 3]
 
 Internet-Draft              MAC-only Ciphers                   June 2021
 
@@ -221,7 +221,7 @@ Internet-Draft              MAC-only Ciphers                   June 2021
 
 
 
-Cam-Winget & Visoky     Expires December 14, 2021               [Page 4]
+Cam-Winget & Visoky     Expires December 18, 2021               [Page 4]
 
 Internet-Draft              MAC-only Ciphers                   June 2021
 
@@ -277,7 +277,7 @@ Internet-Draft              MAC-only Ciphers                   June 2021
 
 
 
-Cam-Winget & Visoky     Expires December 14, 2021               [Page 5]
+Cam-Winget & Visoky     Expires December 18, 2021               [Page 5]
 
 Internet-Draft              MAC-only Ciphers                   June 2021
 
@@ -333,7 +333,7 @@ Internet-Draft              MAC-only Ciphers                   June 2021
 
 
 
-Cam-Winget & Visoky     Expires December 14, 2021               [Page 6]
+Cam-Winget & Visoky     Expires December 18, 2021               [Page 6]
 
 Internet-Draft              MAC-only Ciphers                   June 2021
 
@@ -389,7 +389,7 @@ Internet-Draft              MAC-only Ciphers                   June 2021
 
 
 
-Cam-Winget & Visoky     Expires December 14, 2021               [Page 7]
+Cam-Winget & Visoky     Expires December 18, 2021               [Page 7]
 
 Internet-Draft              MAC-only Ciphers                   June 2021
 
@@ -445,7 +445,7 @@ Internet-Draft              MAC-only Ciphers                   June 2021
 
 
 
-Cam-Winget & Visoky     Expires December 14, 2021               [Page 8]
+Cam-Winget & Visoky     Expires December 18, 2021               [Page 8]
 
 Internet-Draft              MAC-only Ciphers                   June 2021
 
@@ -485,9 +485,27 @@ Internet-Draft              MAC-only Ciphers                   June 2021
    tokens in HTTP), as data requiring confidentiality MUST NOT be sent
    using these cipher suites.
 
+   Limits on key usage for AEAD-based ciphers are described in
+   [RFC8446].  However, as the cipher suites discussed here are not
+   AEAD, those same limits do not apply.  However, with extended use the
+   keys used for HMAC of data in these cipher suites will experience
+   degrated protection, as cryptanalysis becomes more feasible with
+   larger data sets.  Exact details of degradation are subject to packet
+   flow of a given system, although the general security properties of
+   HMACs discussed in [RFC2104] and [BCK1] apply.
+
    DTLS 1.3 defines a mechanism for encrypting the DTLS record sequence
    numbers.  However, as these cipher suites do not utilize encryption,
    the record sequence numbers are sent unencrypted.  That is, the
+
+
+
+
+Cam-Winget & Visoky     Expires December 18, 2021               [Page 9]
+
+Internet-Draft              MAC-only Ciphers                   June 2021
+
+
    procedure for DTLS record sequence number protection is to apply no
    protection for these cipher suites.
 
@@ -496,15 +514,6 @@ Internet-Draft              MAC-only Ciphers                   June 2021
    IoT market, it is important that any IoT endpoint that uses them be
    explicitly configured with a policy of non-confidential
    communications.
-
-
-
-
-
-Cam-Winget & Visoky     Expires December 14, 2021               [Page 9]
-
-Internet-Draft              MAC-only Ciphers                   June 2021
-
 
 10.  Acknowledgements
 
@@ -519,8 +528,17 @@ Internet-Draft              MAC-only Ciphers                   June 2021
 
 11.1.  Normative References
 
+   [BCK1]     Bellare, M., Canetti, R., and H. Krawczyk, "Keyed Hash
+              Functions and Message Authentication",
+              <https://cseweb.ucsd.edu/~mihir/papers/kmd5.pdf>.
+
    [DTLS13]   IETF Internet Drafts editor,
               "https://tools.ietf.org/id/draft-ietf-tls-dtls13-38.txt".
+
+   [RFC2104]  Krawczyk, H., Bellare, M., and R. Canetti, "HMAC: Keyed-
+              Hashing for Message Authentication", RFC 2104,
+              DOI 10.17487/RFC2104, February 1997,
+              <https://www.rfc-editor.org/info/rfc2104>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -536,6 +554,14 @@ Internet-Draft              MAC-only Ciphers                   June 2021
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/info/rfc8174>.
 
+
+
+
+Cam-Winget & Visoky     Expires December 18, 2021              [Page 10]
+
+Internet-Draft              MAC-only Ciphers                   June 2021
+
+
    [RFC8446]  Rescorla, E., "The Transport Layer Security (TLS) Protocol
               Version 1.3", RFC 8446, DOI 10.17487/RFC8446, August 2018,
               <https://www.rfc-editor.org/info/rfc8446>.
@@ -548,19 +574,6 @@ Internet-Draft              MAC-only Ciphers                   June 2021
               <https://www.rfc-editor.org/info/rfc5246>.
 
 Authors' Addresses
-
-
-
-
-
-
-
-
-
-Cam-Winget & Visoky     Expires December 14, 2021              [Page 10]
-
-Internet-Draft              MAC-only Ciphers                   June 2021
-
 
    Nancy Cam-Winget
    Cisco Systems
@@ -600,17 +613,4 @@ Internet-Draft              MAC-only Ciphers                   June 2021
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-Cam-Winget & Visoky     Expires December 14, 2021              [Page 11]
+Cam-Winget & Visoky     Expires December 18, 2021              [Page 11]
