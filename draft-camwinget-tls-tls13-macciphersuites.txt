@@ -491,7 +491,7 @@ Internet-Draft              MAC-only Ciphers                   June 2021
    properties of HMACs discussed in [RFC2104] and [BCK1] apply.
    Additionally, security considerations on the algorithm's strength
    based on the HMAC key length and trunction length further described
-   in [RFC4868] also apply.  Until further cryptoanalysis demonstrate
+   in [RFC4868] also apply.  Until further cryptanalysis demonstrate
    limitations on key usage for HMACs, general practice for key usage
    recommends that implementations place limits on the lifetime of the
    HMAC keys and invoke a key update as described in [RFC8446] prior to
