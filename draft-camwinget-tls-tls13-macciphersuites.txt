@@ -5,8 +5,8 @@
 TLS                                                        N. Cam-Winget
 Internet-Draft                                             Cisco Systems
 Intended status: Informational                                 J. Visoky
-Expires: December 18, 2021                                          ODVA
-                                                           June 16, 2021
+Expires: December 19, 2021                                          ODVA
+                                                           June 17, 2021
 
 
         TLS 1.3 Authentication and Integrity only Cipher Suites
@@ -47,13 +47,13 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on December 18, 2021.
+   This Internet-Draft will expire on December 19, 2021.
 
 
 
 
 
-Cam-Winget & Visoky     Expires December 18, 2021               [Page 1]
+Cam-Winget & Visoky     Expires December 19, 2021               [Page 1]
 
 Internet-Draft              MAC-only Ciphers                   June 2021
 
@@ -109,7 +109,7 @@ Table of Contents
 
 
 
-Cam-Winget & Visoky     Expires December 18, 2021               [Page 2]
+Cam-Winget & Visoky     Expires December 19, 2021               [Page 2]
 
 Internet-Draft              MAC-only Ciphers                   June 2021
 
@@ -165,7 +165,7 @@ Internet-Draft              MAC-only Ciphers                   June 2021
 
 
 
-Cam-Winget & Visoky     Expires December 18, 2021               [Page 3]
+Cam-Winget & Visoky     Expires December 19, 2021               [Page 3]
 
 Internet-Draft              MAC-only Ciphers                   June 2021
 
@@ -221,7 +221,7 @@ Internet-Draft              MAC-only Ciphers                   June 2021
 
 
 
-Cam-Winget & Visoky     Expires December 18, 2021               [Page 4]
+Cam-Winget & Visoky     Expires December 19, 2021               [Page 4]
 
 Internet-Draft              MAC-only Ciphers                   June 2021
 
@@ -277,7 +277,7 @@ Internet-Draft              MAC-only Ciphers                   June 2021
 
 
 
-Cam-Winget & Visoky     Expires December 18, 2021               [Page 5]
+Cam-Winget & Visoky     Expires December 19, 2021               [Page 5]
 
 Internet-Draft              MAC-only Ciphers                   June 2021
 
@@ -333,7 +333,7 @@ Internet-Draft              MAC-only Ciphers                   June 2021
 
 
 
-Cam-Winget & Visoky     Expires December 18, 2021               [Page 6]
+Cam-Winget & Visoky     Expires December 19, 2021               [Page 6]
 
 Internet-Draft              MAC-only Ciphers                   June 2021
 
@@ -389,7 +389,7 @@ Internet-Draft              MAC-only Ciphers                   June 2021
 
 
 
-Cam-Winget & Visoky     Expires December 18, 2021               [Page 7]
+Cam-Winget & Visoky     Expires December 19, 2021               [Page 7]
 
 Internet-Draft              MAC-only Ciphers                   June 2021
 
@@ -445,7 +445,7 @@ Internet-Draft              MAC-only Ciphers                   June 2021
 
 
 
-Cam-Winget & Visoky     Expires December 18, 2021               [Page 8]
+Cam-Winget & Visoky     Expires December 19, 2021               [Page 8]
 
 Internet-Draft              MAC-only Ciphers                   June 2021
 
@@ -487,25 +487,28 @@ Internet-Draft              MAC-only Ciphers                   June 2021
 
    Limits on key usage for AEAD-based ciphers are described in
    [RFC8446].  However, as the cipher suites discussed here are not
-   AEAD, those same limits do not apply.  However, with extended use the
-   keys used for HMAC of data in these cipher suites will experience
-   degrated protection, as cryptanalysis becomes more feasible with
-   larger data sets.  Exact details of degradation are subject to packet
-   flow of a given system, although the general security properties of
-   HMACs discussed in [RFC2104] and [BCK1] apply.
-
-   DTLS 1.3 defines a mechanism for encrypting the DTLS record sequence
-   numbers.  However, as these cipher suites do not utilize encryption,
-   the record sequence numbers are sent unencrypted.  That is, the
-
+   AEAD, those same limits do not apply.  The general security
+   properties of HMACs discussed in [RFC2104] and [BCK1] apply.
+   Additionally, security considerations on the algorithm's strength
+   based on the HMAC key length and trunction length further described
+   in [RFC4868] also apply.  Until further cryptoanalysis demonstrate
+   limitations on key usage for HMACs, general practice for key usage
+   recommends that implementations place limits on the lifetime of the
+   HMAC keys and invoke a key update as described in [RFC8446] prior to
+   reaching this limit.
 
 
 
-Cam-Winget & Visoky     Expires December 18, 2021               [Page 9]
+
+
+Cam-Winget & Visoky     Expires December 19, 2021               [Page 9]
 
 Internet-Draft              MAC-only Ciphers                   June 2021
 
 
+   DTLS 1.3 defines a mechanism for encrypting the DTLS record sequence
+   numbers.  However, as these cipher suites do not utilize encryption,
+   the record sequence numbers are sent unencrypted.  That is, the
    procedure for DTLS record sequence number protection is to apply no
    protection for these cipher suites.
 
@@ -545,6 +548,20 @@ Internet-Draft              MAC-only Ciphers                   June 2021
               DOI 10.17487/RFC2119, March 1997,
               <https://www.rfc-editor.org/info/rfc2119>.
 
+   [RFC4868]  Kelly, S. and S. Frankel, "Using HMAC-SHA-256, HMAC-SHA-
+              384, and HMAC-SHA-512 with IPsec", RFC 4868,
+              DOI 10.17487/RFC4868, May 2007,
+              <https://www.rfc-editor.org/info/rfc4868>.
+
+
+
+
+
+Cam-Winget & Visoky     Expires December 19, 2021              [Page 10]
+
+Internet-Draft              MAC-only Ciphers                   June 2021
+
+
    [RFC6234]  Eastlake 3rd, D. and T. Hansen, "US Secure Hash Algorithms
               (SHA and SHA-based HMAC and HKDF)", RFC 6234,
               DOI 10.17487/RFC6234, May 2011,
@@ -553,14 +570,6 @@ Internet-Draft              MAC-only Ciphers                   June 2021
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/info/rfc8174>.
-
-
-
-
-Cam-Winget & Visoky     Expires December 18, 2021              [Page 10]
-
-Internet-Draft              MAC-only Ciphers                   June 2021
-
 
    [RFC8446]  Rescorla, E., "The Transport Layer Security (TLS) Protocol
               Version 1.3", RFC 8446, DOI 10.17487/RFC8446, August 2018,
@@ -604,13 +613,4 @@ Authors' Addresses
 
 
 
-
-
-
-
-
-
-
-
-
-Cam-Winget & Visoky     Expires December 18, 2021              [Page 11]
+Cam-Winget & Visoky     Expires December 19, 2021              [Page 11]
